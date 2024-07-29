@@ -4,7 +4,14 @@ from datetime import datetime, timedelta
 import os
 
 
-def generate_dataset(num_rows, start_date, end_date, output_dir):
+def generate_dataset(num_rows,
+                     start_date=datetime(2023, 1, 1),
+                     end_date=datetime(2024, 12, 31),
+                     output_dir='data'):
+
+    # Create output directory if it doesn't exist
+    os.makedirs(output_dir, exist_ok=True)
+
     # Generate random dates
     date_range = pd.date_range(start=start_date, end=end_date, periods=num_rows).date
 
@@ -38,19 +45,10 @@ def generate_dataset(num_rows, start_date, end_date, output_dir):
     df.to_csv(csv_filename, index=False)
     df.to_parquet(parquet_filename, index=False)
 
-    print(f"Dataset with {num_rows} rows saved as CSV and Parquet.")
-
-
-# Set parameters
-start_date = datetime(2023, 1, 1)
-end_date = datetime(2024, 12, 31)
-output_dir = 'data'
-
-# Create output directory if it doesn't exist
-os.makedirs(output_dir, exist_ok=True)
+    return df
 
 # Generate datasets
-datasets = [1_000, 10_000, 100_000, 1_000_000, 10_000_000]
-
-for num_rows in datasets:
-    generate_dataset(num_rows, start_date, end_date, output_dir)
+# datasets = [1_000, 10_000, 100_000, 1_000_000, 10_000_000]
+#
+# for num_rows in datasets:
+#     generate_dataset(num_rows, start_date, end_date, output_dir)
