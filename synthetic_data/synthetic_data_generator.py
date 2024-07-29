@@ -45,8 +45,6 @@ def generate_dataset(num_rows,
     df.to_csv(csv_filename, index=False)
     df.to_parquet(parquet_filename, index=False)
 
-    print(f"Dataset with {num_rows} rows saved as CSV and Parquet.")
-
     return df
 
 # Generate datasets
