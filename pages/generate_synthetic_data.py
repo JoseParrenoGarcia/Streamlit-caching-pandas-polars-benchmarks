@@ -26,20 +26,21 @@ with st.sidebar:
 
     if st.session_state.synthetic_data_complete is False:
         if gen_sythn_data_button:
-            # Add a progress bar
-
-            # List of dataset sizes
-            datasets = [1_000, 10_000, 100_000, 1_000_000, 10_000_000]
-            for num_rows in datasets:
-                generate_dataset(num_rows)
+            with st.status("Generating synthetic data...", expanded=True):
+                # List of dataset sizes
+                datasets = [1_000, 10_000, 100_000, 1_000_000, 10_000_000]
+                for num_rows in datasets:
+                    st.write(f"Dataset: {num_rows:,} rows")
+                    generate_dataset(num_rows)
 
             st.session_state.synthetic_data_complete = True
 
-            # Add a success message
+            st.success('Synthetic data generated!', icon="✅")
 
     else:
         if gen_sythn_data_button:
-            st.write('You have already executed the data generator job. The app will not re-execute it.')
+            st.success('Synthetic data has already been generated.', icon="✅")
+            st.write('If you do want to re-generate the data, refresh the page and start again.')
 
 # ---------------------------------------------------------------------
 # HOME PAGE - MAIN CONTENT AREA
