@@ -12,6 +12,12 @@ st.set_page_config(
 pages_format()
 
 # ---------------------------------------------------------------------
+# INITIALISE SESSION_STATE VARIABLES
+# ---------------------------------------------------------------------
+if 'synthetic_data_complete' not in st.session_state:
+    st.session_state.synthetic_data_complete = False
+
+# ---------------------------------------------------------------------
 # HOME PAGE - SIDEBAR
 # ---------------------------------------------------------------------
 with st.sidebar:
