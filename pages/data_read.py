@@ -1,10 +1,8 @@
 import streamlit as st
 from pages.pages_format import pages_format
-# from utils.read_data_functions import read_and_combine_csv_files, read_and_combine_csv_files_cached
 from utils.read_data_functions import read_data_store_execution_time
-import time
+from utils.plotting_functions import plot_execution_time_bar_charts
 import pandas as pd
-
 
 # ---------------------------------------------------------------------
 # HOME PAGE - CONFIGURATION
@@ -20,6 +18,12 @@ pages_format()
 # ---------------------------------------------------------------------
 if 'read_data_complete' not in st.session_state:
     st.session_state.read_data_complete = False
+
+if 'read_data_first_run_tag' not in st.session_state:
+    st.session_state.read_data_first_run_tag = False
+
+if 'first_run_execution_time_csv_df' not in st.session_state:
+    st.session_state.first_run_execution_time_csv_df = None
 
 datasets = [1_000, 10_000, 100_000, 1_000_000, 10_000_000]
 
@@ -60,8 +64,13 @@ with st.sidebar:
             execution_time_df.append({'Tag': tag, 'Execution Time': info['execution_time']})
 
         execution_time_df = pd.DataFrame(execution_time_df)
-        execution_time_df['number_of_rows'] = execution_time_df['Tag'].str.extract(r'dataframe_(\d+)')[0].astype(int)
-        execution_time_df['data_format'] = execution_time_df['Tag'].str.extract(r'(csv_pandas|csv_pandas_cached|csv_polars|csv_polars_cached)$')[0]
+        execution_time_df['Number of rows'] = execution_time_df['Tag'].str.extract(r'dataframe_(\d+)')[0].astype(int)
+        execution_time_df['Data format'] = execution_time_df['Tag'].str.extract(r'(csv_pandas|csv_pandas_cached|csv_polars|csv_polars_cached)$')[0]
+
+        # Storing the execution_time_df in session state so that we can compare the first run vs following runs
+        if st.session_state.read_data_first_run_tag == False:
+            st.session_state.first_run_execution_time_csv_df = execution_time_df.copy()
+            st.session_state.read_data_first_run_tag = True
 
 # ---------------------------------------------------------------------
 # HOME PAGE - MAIN CONTENT AREA
@@ -87,11 +96,19 @@ else:
                 st.write('Caching doesnt happen the first time you read. Therefore, we dont expect performance differences between the **pandas** csv read when its cached or not. '
                          ' Likewise between the **polars** csv read when its cached or not.')
 
+                st.plotly_chart(plot_execution_time_bar_charts(st.session_state.first_run_execution_time_csv_df))
+
         with col2:
             with st.container(border=True):
                 st.html('<h6>Second+ run</h6>')
-                st.write('When you hit **Read data** the second time (or the read functions are used a second time), caching should kick in. We should see a '
-                         'difference between the pandas cached vs not cached function. Caching is not support in polars, so no expected differences.')
+                if st.session_state.read_data_first_run_tag:
+                    st.write('When you hit **Read data** the second time (or the read functions are used a second time), caching should kick in. We should see a '
+                             'difference between the pandas cached vs not cached function. Caching is not support in polars, so no expected differences.')
+
+                    st.plotly_chart(plot_execution_time_bar_charts(execution_time_df))
+
+                else:
+                    st.warning('Please click on **Read data** again to get caching taking effect')
 
     st.dataframe(execution_time_df)
 
@@ -99,6 +116,3 @@ else:
     # st.write(dataframes_dict['dataframe_1000_csv'])
     # st.write(dataframes_dict['dataframe_1000_csv']['dataframe'])
     # st.write(dataframes_dict['dataframe_1000_csv']['execution_time'])
-
-
-
