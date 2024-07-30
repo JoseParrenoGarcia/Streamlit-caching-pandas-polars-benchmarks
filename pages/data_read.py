@@ -69,9 +69,29 @@ with st.sidebar:
 if st.session_state.read_data_complete is False:
     st.warning('Please click on **Read data**')
 else:
-    st.html('<h5>Speed of data reads</h5>')
-    st.write('In this page, we will compare how fast do pandas and polars read data. In addition, we want to see the effects that <i>st.cache_data()</i> has on'
-             ' the speed of execution when the app is re-ran.')
+    with st.container(border=True):
+        st.html('<h4>Speed of data reads</h4>')
+        st.markdown("- In this page, we will compare how fast do pandas and polars read data \n"
+                    "- The data is stored in both CSV and Parquet format. \n"
+                    "- In addition, we want to see the effects that ***st.cache_data()*** has on the speed of execution when the app is re-ran. \n"
+                    )
+
+    with st.container(border=True):
+        st.html('<h5>CSV files</h5>')
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+            with st.container(border=True):
+                st.html('<h6>First run</h6>')
+                st.write('Caching doesnt happen the first time you read. Therefore, we dont expect performance differences between the **pandas** csv read when its cached or not. '
+                         ' Likewise between the **polars** csv read when its cached or not.')
+
+        with col2:
+            with st.container(border=True):
+                st.html('<h6>Second+ run</h6>')
+                st.write('When you hit **Read data** the second time (or the read functions are used a second time), caching should kick in. We should see a '
+                         'difference between the pandas cached vs not cached function. Caching is not support in polars, so no expected differences.')
 
     st.dataframe(execution_time_df)
 

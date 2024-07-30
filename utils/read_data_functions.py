@@ -3,6 +3,7 @@ import pandas as pd
 import streamlit as st
 import time
 import polars as pl
+import re
 
 
 def read_and_combine_csv_files_pandas(folder_path):
@@ -83,10 +84,25 @@ def read_and_combine_csv_files_polars_cached(folder_path):
     return combined_df
 
 
+def _clean_tag(tag):
+    # Remove underscores
+    tag = tag.replace('_', ' ')
+
+    # Convert to title case
+    tag = tag.title()
+
+    # Handle numbers separately to keep them as they are
+    tag = re.sub(r'(\d+)', lambda x: x.group(1), tag)
+
+    return tag
+
+
 def read_data_store_execution_time(dataframes_dict, tag, path, data_format='csv_pandas'):
     # Data format can only be 'csv_pandas', 'csv_pandas_cached', 'csv_polars', 'csv_polars_cached'
 
-    st.write(tag)
+    clean_tag = _clean_tag(tag)
+
+    st.write(clean_tag)
     start_time = time.time()
 
     if data_format == 'csv_pandas':
