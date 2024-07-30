@@ -6,7 +6,7 @@ axis_line_width = 2
 
 
 def _yaxis_primary_basic_formatting(fig, feature):
-    fig.update_yaxes(title=dict(text=feature), linecolor=axis_line_colour, linewidth=axis_line_width)
+    fig.update_yaxes(title=dict(text=feature), linecolor=axis_line_colour, linewidth=axis_line_width,)
 
 
 def _xaxis_primary_basic_formatting(fig, feature):

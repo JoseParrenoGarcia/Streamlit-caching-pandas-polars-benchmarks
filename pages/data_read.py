@@ -88,27 +88,23 @@ else:
     with st.container(border=True):
         st.html('<h5>CSV files</h5>')
 
-        col1, col2 = st.columns(2)
+        with st.container(border=True):
+            st.html('<h6>First run</h6>')
+            st.write('Caching doesnt happen the first time you read. Therefore, we dont expect performance differences between the **pandas** csv read when its cached or not. '
+                     ' Likewise between the **polars** csv read when its cached or not.')
 
-        with col1:
-            with st.container(border=True):
-                st.html('<h6>First run</h6>')
-                st.write('Caching doesnt happen the first time you read. Therefore, we dont expect performance differences between the **pandas** csv read when its cached or not. '
-                         ' Likewise between the **polars** csv read when its cached or not.')
+            st.plotly_chart(plot_execution_time_bar_charts(st.session_state.first_run_execution_time_csv_df))
 
-                st.plotly_chart(plot_execution_time_bar_charts(st.session_state.first_run_execution_time_csv_df))
+        with st.container(border=True):
+            st.html('<h6>Second+ run</h6>')
+            if st.session_state.read_data_first_run_tag:
+                st.write('When you hit **Read data** the second time (or the read functions are used a second time), caching should kick in. We should see a '
+                         'difference between the pandas cached vs not cached function. Caching is not support in polars, so no expected differences.')
 
-        with col2:
-            with st.container(border=True):
-                st.html('<h6>Second+ run</h6>')
-                if st.session_state.read_data_first_run_tag:
-                    st.write('When you hit **Read data** the second time (or the read functions are used a second time), caching should kick in. We should see a '
-                             'difference between the pandas cached vs not cached function. Caching is not support in polars, so no expected differences.')
+                st.plotly_chart(plot_execution_time_bar_charts(execution_time_df))
 
-                    st.plotly_chart(plot_execution_time_bar_charts(execution_time_df))
-
-                else:
-                    st.warning('Please click on **Read data** again to get caching taking effect')
+            else:
+                st.warning('Please click on **Read data** again to get caching taking effect')
 
     st.dataframe(execution_time_df)
 
