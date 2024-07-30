@@ -37,8 +37,7 @@ def generate_dataset(num_rows,
     })
 
     # Save as CSV and Parquet
-    # -> Because Github doesnt allow 
-
+    # -> Because Github doesnt allow files larger than 100mb, I had to split bigger files into smaller parts.
 
     # Determine the number of files needed
     num_files = (num_rows // max_rows_per_file) + (1 if num_rows % max_rows_per_file > 0 else 0)
@@ -48,15 +47,17 @@ def generate_dataset(num_rows,
         end_idx = min((i + 1) * max_rows_per_file, num_rows)
         subset_df = df.iloc[start_idx:end_idx]
 
-        # Create output directory if it doesn't exist
+        # CSV
         output_dir_csv = f'data_csv/dataset_{num_rows}'
         os.makedirs(output_dir_csv, exist_ok=True)
         csv_filename = os.path.join(output_dir_csv, f'dataset_{num_rows}_subset{i + 1}.csv')
-
-        # parquet_filename = os.path.join(output_dir, f'dataset_{num_rows}_subset{i + 1}.parquet')
-
         subset_df.to_csv(csv_filename, index=False)
-        # subset_df.to_parquet(parquet_filename, index=False)
+
+        # Parquet
+        output_dir_parquet = f'data_parquet/dataset_{num_rows}'
+        os.makedirs(output_dir_parquet, exist_ok=True)
+        parquet_filename = os.path.join(output_dir_parquet, f'dataset_{num_rows}_subset{i + 1}.parquet')
+        subset_df.to_parquet(parquet_filename, index=False)
 
     return df
 
