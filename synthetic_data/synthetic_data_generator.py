@@ -7,10 +7,8 @@ import os
 def generate_dataset(num_rows,
                      start_date=datetime(2023, 1, 1),
                      end_date=datetime(2024, 12, 31),
-                     output_dir='data'):
-
-    # Create output directory if it doesn't exist
-    os.makedirs(output_dir, exist_ok=True)
+                     max_rows_per_file=200_000,
+                     ):
 
     # Generate random dates
     date_range = pd.date_range(start=start_date, end=end_date, periods=num_rows).date
@@ -38,17 +36,35 @@ def generate_dataset(num_rows,
         'Device': device
     })
 
-    # Save as CSV and Parquet
-    csv_filename = os.path.join(output_dir, f'dataset_{num_rows}.csv')
-    parquet_filename = os.path.join(output_dir, f'dataset_{num_rows}.parquet')
+    # # Save as CSV and Parquet
+    # csv_filename = os.path.join(output_dir, f'dataset_{num_rows}.csv')
+    # parquet_filename = os.path.join(output_dir, f'dataset_{num_rows}.parquet')
+    #
+    # df.to_csv(csv_filename, index=False)
+    # df.to_parquet(parquet_filename, index=False)
 
-    df.to_csv(csv_filename, index=False)
-    df.to_parquet(parquet_filename, index=False)
+    # Determine the number of files needed
+    num_files = (num_rows // max_rows_per_file) + (1 if num_rows % max_rows_per_file > 0 else 0)
+
+    for i in range(num_files):
+        start_idx = i * max_rows_per_file
+        end_idx = min((i + 1) * max_rows_per_file, num_rows)
+        subset_df = df.iloc[start_idx:end_idx]
+
+        # Create output directory if it doesn't exist
+        output_dir_csv = f'data_csv/dataset_{num_rows}'
+        os.makedirs(output_dir_csv, exist_ok=True)
+        csv_filename = os.path.join(output_dir_csv, f'dataset_{num_rows}_subset{i + 1}.csv')
+
+        # parquet_filename = os.path.join(output_dir, f'dataset_{num_rows}_subset{i + 1}.parquet')
+
+        subset_df.to_csv(csv_filename, index=False)
+        # subset_df.to_parquet(parquet_filename, index=False)
 
     return df
 
 # Generate datasets
-# datasets = [1_000, 10_000, 100_000, 1_000_000, 10_000_000]
-#
-# for num_rows in datasets:
-#     generate_dataset(num_rows, start_date, end_date, output_dir)
+datasets = [1_000, 10_000, 100_000, 1_000_000, 10_000_000]
+
+for num_rows in datasets:
+    generate_dataset(num_rows)
