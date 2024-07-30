@@ -36,11 +36,14 @@ with st.sidebar:
 
             # List of dataset sizes
             for num_rows in datasets:
-                tag = f'dataframe_{num_rows}_csv'
-                dataframes_dict = read_data_store_execution_time(dataframes_dict, tag, f'synthetic_data/data_csv/dataset_{num_rows}', data_format='csv')
+                tag = f'dataframe_{num_rows}_csv_pandas'
+                dataframes_dict = read_data_store_execution_time(dataframes_dict, tag, f'synthetic_data/data_csv/dataset_{num_rows}', data_format='csv_pandas')
 
-                tag = f'dataframe_{num_rows}_csv_cached'
-                dataframes_dict = read_data_store_execution_time(dataframes_dict, tag, f'synthetic_data/data_csv/dataset_{num_rows}', data_format='csv_cached')
+                tag = f'dataframe_{num_rows}_csv_pandas_cached'
+                dataframes_dict = read_data_store_execution_time(dataframes_dict, tag, f'synthetic_data/data_csv/dataset_{num_rows}', data_format='csv_pandas_cached')
+
+                tag = f'dataframe_{num_rows}_csv_polars'
+                dataframes_dict = read_data_store_execution_time(dataframes_dict, tag, f'synthetic_data/data_csv/dataset_{num_rows}', data_format='csv_polars')
 
                 st.write('----------------------')
 
@@ -55,7 +58,7 @@ with st.sidebar:
 
         execution_time_df = pd.DataFrame(execution_time_df)
         execution_time_df['number_of_rows'] = execution_time_df['Tag'].str.extract(r'dataframe_(\d+)')[0].astype(int)
-        execution_time_df['data_format'] = execution_time_df['Tag'].str.extract(r'(csv|csv_cached|polars)$')[0]
+        execution_time_df['data_format'] = execution_time_df['Tag'].str.extract(r'(csv_pandas|csv_pandas_cached|csv_polars)$')[0]
 
 # ---------------------------------------------------------------------
 # HOME PAGE - MAIN CONTENT AREA
