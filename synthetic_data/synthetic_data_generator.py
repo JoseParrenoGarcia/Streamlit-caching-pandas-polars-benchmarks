@@ -36,12 +36,9 @@ def generate_dataset(num_rows,
         'Device': device
     })
 
-    # # Save as CSV and Parquet
-    # csv_filename = os.path.join(output_dir, f'dataset_{num_rows}.csv')
-    # parquet_filename = os.path.join(output_dir, f'dataset_{num_rows}.parquet')
-    #
-    # df.to_csv(csv_filename, index=False)
-    # df.to_parquet(parquet_filename, index=False)
+    # Save as CSV and Parquet
+    # -> Because Github doesnt allow 
+
 
     # Determine the number of files needed
     num_files = (num_rows // max_rows_per_file) + (1 if num_rows % max_rows_per_file > 0 else 0)
