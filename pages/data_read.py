@@ -1,8 +1,8 @@
 import streamlit as st
 from pages.pages_format import pages_format
-from utils.read_data_functions import read_data_store_execution_time
+from utils.read_data_functions import read_data_store_execution_time, read_and_combine_csv_files_polars_cached, read_and_combine_csv_files_pandas_cached
 from utils.plotting_functions import plot_execution_time_bar_charts
-import pandas as pd
+from utils.execution_times import execution_times_df, calculate_percent_diff_execution_times
 
 # ---------------------------------------------------------------------
 # HOME PAGE - CONFIGURATION
@@ -19,13 +19,41 @@ pages_format()
 if 'read_data_complete' not in st.session_state:
     st.session_state.read_data_complete = False
 
-if 'read_data_first_run_tag' not in st.session_state:
-    st.session_state.read_data_first_run_tag = False
-
 if 'first_run_execution_time_csv_df' not in st.session_state:
     st.session_state.first_run_execution_time_csv_df = None
 
+if 'is_first_run' not in st.session_state:
+    st.session_state.is_first_run = True
+
 datasets = [1_000, 10_000, 100_000, 1_000_000, 10_000_000]
+
+
+# ---------------------------------------------------------------------
+# CACHE FUNCTION TO PERSIST FIRST RUN EXECUTION TIMES
+# ---------------------------------------------------------------------
+def get_first_run_execution_times():
+    return None
+
+
+@st.cache_data
+def set_first_run_execution_times(df):
+    return df
+
+def clear_cache():
+    read_and_combine_csv_files_pandas_cached.clear()
+    read_and_combine_csv_files_polars_cached.clear()
+
+
+# Clear cache on page refresh (if session state is reset)
+if st.session_state.is_first_run:
+    clear_cache()
+    st.session_state.is_first_run = False
+
+# Load initial execution times from cache if they exist
+initial_execution_times = get_first_run_execution_times()
+
+if initial_execution_times is not None:
+    st.session_state.first_run_execution_time_csv_df = initial_execution_times
 
 # ---------------------------------------------------------------------
 # HOME PAGE - SIDEBAR
@@ -34,7 +62,7 @@ with st.sidebar:
     read_data_button = st.button("Read data", type="primary")
 
     if read_data_button:
-        with st.status("Reading data...", expanded=True):
+        with st.status("Reading data...", expanded=False):
             # Dictionary to store DataFrames and its execution time
             dataframes_dict = {}
 
@@ -58,18 +86,15 @@ with st.sidebar:
         st.success('All data was succesfully read!', icon="✅")
 
         # Extracting the execution times in a dataframe so that we can plot
-        execution_time_df = []
-
-        for tag, info in dataframes_dict.items():
-            execution_time_df.append({'Tag': tag, 'Execution Time': info['execution_time']})
-
-        execution_time_df = pd.DataFrame(execution_time_df)
-        execution_time_df['Number of rows'] = execution_time_df['Tag'].str.extract(r'dataframe_(\d+)')[0].astype(int)
-        execution_time_df['Data format'] = execution_time_df['Tag'].str.extract(r'(pandas|pandas_cached|polars|polars_cached)$')[0]
+        execution_time_df = execution_times_df(dataframes_dict)
 
         # Storing the execution_time_df in session state so that we can compare the first run vs following runs
-        if st.session_state.read_data_first_run_tag == False:
+        if st.session_state.first_run_execution_time_csv_df is None:
             st.session_state.first_run_execution_time_csv_df = execution_time_df.copy()
+            set_first_run_execution_times(execution_time_df)
+
+        comparison_baseline_radio = st.radio(label='Compare execution times against:',
+                                             options=execution_time_df['Data format'].unique())
 
 # ---------------------------------------------------------------------
 # HOME PAGE - MAIN CONTENT AREA
@@ -95,6 +120,12 @@ else:
                      ' caching is slightly worse. The hope is that this is recovered with caching when the function is re-used by the app.')
 
             st.plotly_chart(plot_execution_time_bar_charts(st.session_state.first_run_execution_time_csv_df))
+
+            diffs = calculate_percent_diff_execution_times(execution_time_df=st.session_state.first_run_execution_time_csv_df,
+                                                           selected_baseline=comparison_baseline_radio
+                                                           )
+
+            st.write(diffs)
 
         with st.container(border=True):
             st.html('<h6>Second+ run</h6>')
