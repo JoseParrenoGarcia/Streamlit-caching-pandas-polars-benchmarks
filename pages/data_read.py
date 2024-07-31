@@ -65,12 +65,11 @@ with st.sidebar:
 
         execution_time_df = pd.DataFrame(execution_time_df)
         execution_time_df['Number of rows'] = execution_time_df['Tag'].str.extract(r'dataframe_(\d+)')[0].astype(int)
-        execution_time_df['Data format'] = execution_time_df['Tag'].str.extract(r'(csv_pandas|csv_pandas_cached|csv_polars|csv_polars_cached)$')[0]
+        execution_time_df['Data format'] = execution_time_df['Tag'].str.extract(r'(pandas|pandas_cached|polars|polars_cached)$')[0]
 
         # Storing the execution_time_df in session state so that we can compare the first run vs following runs
         if st.session_state.read_data_first_run_tag == False:
             st.session_state.first_run_execution_time_csv_df = execution_time_df.copy()
-            st.session_state.read_data_first_run_tag = True
 
 # ---------------------------------------------------------------------
 # HOME PAGE - MAIN CONTENT AREA
@@ -90,21 +89,22 @@ else:
 
         with st.container(border=True):
             st.html('<h6>First run</h6>')
-            st.write('Caching doesnt happen the first time you read. Therefore, we dont expect performance differences between the **pandas** csv read when its cached or not. '
-                     ' Likewise between the **polars** csv read when its cached or not.')
+            st.write('Caching doesnt happen the first time you read. Therefore, we dont expect performance differences between the pandas read when its cached or not. '
+                     ' The same is expected between cached and not-cached polar reads. In fact, we should see a slightly higher execution time, because (1) first, '
+                     ' Streamlit is running the actual function and (2) then it is caching it. The caching operation takes a bit of time, so for the first run, '
+                     ' caching is slightly worse. The hope is that this is recovered with caching when the function is re-used by the app.')
 
             st.plotly_chart(plot_execution_time_bar_charts(st.session_state.first_run_execution_time_csv_df))
 
         with st.container(border=True):
             st.html('<h6>Second+ run</h6>')
-            if st.session_state.read_data_first_run_tag:
-                st.write('When you hit **Read data** the second time (or the read functions are used a second time), caching should kick in. We should see a '
-                         'difference between the pandas cached vs not cached function. Caching is not support in polars, so no expected differences.')
+            st.write('If you havent clicked the **Read data** a second time, please do so that caching can take effect...')
+            st.write('   ')
+            st.write('When you hit **Read data** the second time (or the read functions are used a second time), caching should kick in. We should see a '
+                     'difference between the pandas cached vs not cached function. Caching is not supported in polars, so the execution time is not improved with '
+                     ' Streamlit caching.')
 
-                st.plotly_chart(plot_execution_time_bar_charts(execution_time_df))
-
-            else:
-                st.warning('Please click on **Read data** again to get caching taking effect')
+            st.plotly_chart(plot_execution_time_bar_charts(execution_time_df))
 
     st.dataframe(execution_time_df)
 

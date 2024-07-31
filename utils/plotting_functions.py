@@ -6,7 +6,14 @@ axis_line_width = 2
 
 
 def _yaxis_primary_basic_formatting(fig, feature):
-    fig.update_yaxes(title=dict(text=feature), linecolor=axis_line_colour, linewidth=axis_line_width,)
+    fig.update_yaxes(title=dict(text=feature), linecolor=axis_line_colour, linewidth=axis_line_width,
+                     minor=dict(ticklen=4,
+                                tickwidth=1,
+                                tickcolor="grey",
+                                showgrid=True,
+                                gridcolor='rgb(248, 249, 249)',
+                                dtick=0.2,)
+                     )
 
 
 def _xaxis_primary_basic_formatting(fig, feature):
@@ -31,13 +38,20 @@ def plot_execution_time_bar_charts(df):
         y='Execution Time',
         color='Data format',
         barmode='group',
+        text_auto=True,
         # title='Execution Time by Number of Rows and Data Format',
         # labels={'number_of_rows': 'Number of Rows', 'execution_time': 'Execution Time (seconds)', 'data_format': 'Data Format'}
     )
 
+    # Update the layout to format text labels
+    fig.update_traces(texttemplate='%{y:.3f}', textposition='outside')
+
+    # Update text color to match bar color
+    fig.for_each_trace(lambda trace: trace.update(textfont_color=trace.marker.color))
+
     _xaxis_primary_basic_formatting(fig=fig, feature='Number of rows')
     _yaxis_primary_basic_formatting(fig=fig, feature='Execution time (s)')
 
-    fig.update_layout(title=dict(text=''), template='plotly_white')
+    fig.update_layout(title=dict(text=''), template='plotly_white', height=420)
 
     return fig
