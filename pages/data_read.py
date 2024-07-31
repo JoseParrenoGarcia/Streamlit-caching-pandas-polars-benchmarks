@@ -22,6 +22,9 @@ if 'read_data_complete' not in st.session_state:
 if 'first_run_execution_time_csv_df' not in st.session_state:
     st.session_state.first_run_execution_time_csv_df = None
 
+if 'loaded_dataframes' not in st.session_state:
+    st.session_state.loaded_dataframes = None
+
 if 'is_first_run' not in st.session_state:
     st.session_state.is_first_run = True
 
@@ -88,6 +91,7 @@ with st.sidebar:
     # Storing the execution_time_df in session state so that we can compare the first run vs following runs
     if st.session_state.first_run_execution_time_csv_df is None:
         st.session_state.first_run_execution_time_csv_df = execution_time_df.copy()
+        st.session_state.loaded_dataframes = dataframes_dict
         set_first_run_execution_times(execution_time_df)
 
     comparison_baseline_radio = st.radio(label='Compare execution times against:',

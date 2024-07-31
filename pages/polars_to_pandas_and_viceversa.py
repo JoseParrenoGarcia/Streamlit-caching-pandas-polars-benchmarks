@@ -16,4 +16,11 @@ pages_format()
 with st.sidebar:
     st.write('hello')
 
-st.write('hello2')
+
+# ---------------------------------------------------------------------
+# HOME PAGE - MAIN CONTENT AREA
+# ---------------------------------------------------------------------
+if 'first_run_execution_time_csv_df' not in st.session_state:
+    st.write('hello2')
+else:
+    st.write(st.session_state.loaded_dataframes)
