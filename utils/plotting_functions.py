@@ -1,18 +1,24 @@
 import plotly.express as px
 
+color_mapping = {
+    'pandas': px.colors.qualitative.Plotly[0],
+    'pandas_cached': px.colors.qualitative.Plotly[1],
+    'polars': px.colors.qualitative.Plotly[2],
+    'polars_cached': px.colors.qualitative.Plotly[3],
+}
 
 axis_line_colour = 'rgb(213, 219, 219)'
 axis_line_width = 2
 
 
-def _yaxis_primary_basic_formatting(fig, feature):
+def _yaxis_primary_basic_formatting(fig, feature, manual_minor_dtick=0.2):
     fig.update_yaxes(title=dict(text=feature), linecolor=axis_line_colour, linewidth=axis_line_width,
                      minor=dict(ticklen=4,
                                 tickwidth=1,
                                 tickcolor="grey",
                                 showgrid=True,
                                 gridcolor='rgb(248, 249, 249)',
-                                dtick=0.2,)
+                                dtick=manual_minor_dtick,)
                      )
 
 
@@ -29,7 +35,8 @@ def _format_number_of_rows(num_str):
     else:
         return str(num)
 
-def plot_execution_time_bar_charts(df):
+
+def plot_execution_time_bar_charts(df, chart_title=''):
     df['nrows_string'] = df['Number of rows'].astype(int).apply(_format_number_of_rows)
 
     fig = px.bar(
@@ -39,12 +46,11 @@ def plot_execution_time_bar_charts(df):
         color='Data format',
         barmode='group',
         text_auto=True,
-        # title='Execution Time by Number of Rows and Data Format',
-        # labels={'number_of_rows': 'Number of Rows', 'execution_time': 'Execution Time (seconds)', 'data_format': 'Data Format'}
+        color_discrete_map=color_mapping,
     )
 
     # Update the layout to format text labels
-    fig.update_traces(texttemplate='%{y:.3f}', textposition='outside')
+    fig.update_traces(texttemplate='%{y:.2f}', textposition='outside')
 
     # Update text color to match bar color
     fig.for_each_trace(lambda trace: trace.update(textfont_color=trace.marker.color))
@@ -52,6 +58,33 @@ def plot_execution_time_bar_charts(df):
     _xaxis_primary_basic_formatting(fig=fig, feature='Number of rows')
     _yaxis_primary_basic_formatting(fig=fig, feature='Execution time (s)')
 
-    fig.update_layout(title=dict(text=''), template='plotly_white', height=420)
+    fig.update_layout(title=dict(text=chart_title), template='plotly_white', height=420, width=750)
+
+    return fig
+
+
+def plot_execution_time_comparison_bar_charts(df, selected_baseline, chart_title=''):
+    df['nrows_string'] = df['Number of rows'].astype(int).apply(_format_number_of_rows)
+
+    fig = px.bar(
+        df,
+        x='nrows_string',
+        y='Ratio',
+        color='Data format',
+        barmode='group',
+        text_auto=True,
+        color_discrete_map=color_mapping,
+    )
+
+    # Update the layout to format text labels
+    fig.update_traces(texttemplate='%{y:.1f}', textposition='outside')
+
+    # Update text color to match bar color
+    fig.for_each_trace(lambda trace: trace.update(textfont_color=trace.marker.color))
+
+    _xaxis_primary_basic_formatting(fig=fig, feature='Number of rows')
+    _yaxis_primary_basic_formatting(fig=fig, feature=f'Ratio of {selected_baseline} / other formats', manual_minor_dtick=0.5)
+
+    fig.update_layout(title=dict(text=chart_title), template='plotly_white', height=420, width=600)
 
     return fig

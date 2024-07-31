@@ -36,5 +36,6 @@ def calculate_percent_diff_execution_times(execution_time_df, selected_baseline)
 
     # Round the ratio to 2 decimal places for readability
     result_df['Ratio'] = result_df['Ratio'].round(2)
+    result_df['Data format'] = result_df['Data format'].str.replace('_ratio', '', regex=False)
 
     return result_df

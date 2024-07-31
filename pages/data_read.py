@@ -1,7 +1,7 @@
 import streamlit as st
 from pages.pages_format import pages_format
 from utils.read_data_functions import read_data_store_execution_time, read_and_combine_csv_files_polars_cached, read_and_combine_csv_files_pandas_cached
-from utils.plotting_functions import plot_execution_time_bar_charts
+from utils.plotting_functions import plot_execution_time_bar_charts, plot_execution_time_comparison_bar_charts
 from utils.execution_times import execution_times_df, calculate_percent_diff_execution_times
 
 # ---------------------------------------------------------------------
@@ -59,42 +59,43 @@ if initial_execution_times is not None:
 # HOME PAGE - SIDEBAR
 # ---------------------------------------------------------------------
 with st.sidebar:
-    read_data_button = st.button("Read data", type="primary")
+    with st.status("Reading data...", expanded=False):
+        # Dictionary to store DataFrames and its execution time
+        dataframes_dict = {}
 
-    if read_data_button:
-        with st.status("Reading data...", expanded=False):
-            # Dictionary to store DataFrames and its execution time
-            dataframes_dict = {}
+        # List of dataset sizes
+        for num_rows in datasets:
+            tag = f'dataframe_{num_rows}_csv_pandas'
+            dataframes_dict = read_data_store_execution_time(dataframes_dict, tag, f'synthetic_data/data_csv/dataset_{num_rows}', data_format='csv_pandas')
 
-            # List of dataset sizes
-            for num_rows in datasets:
-                tag = f'dataframe_{num_rows}_csv_pandas'
-                dataframes_dict = read_data_store_execution_time(dataframes_dict, tag, f'synthetic_data/data_csv/dataset_{num_rows}', data_format='csv_pandas')
+            tag = f'dataframe_{num_rows}_csv_pandas_cached'
+            dataframes_dict = read_data_store_execution_time(dataframes_dict, tag, f'synthetic_data/data_csv/dataset_{num_rows}', data_format='csv_pandas_cached')
 
-                tag = f'dataframe_{num_rows}_csv_pandas_cached'
-                dataframes_dict = read_data_store_execution_time(dataframes_dict, tag, f'synthetic_data/data_csv/dataset_{num_rows}', data_format='csv_pandas_cached')
+            tag = f'dataframe_{num_rows}_csv_polars'
+            dataframes_dict = read_data_store_execution_time(dataframes_dict, tag, f'synthetic_data/data_csv/dataset_{num_rows}', data_format='csv_polars')
 
-                tag = f'dataframe_{num_rows}_csv_polars'
-                dataframes_dict = read_data_store_execution_time(dataframes_dict, tag, f'synthetic_data/data_csv/dataset_{num_rows}', data_format='csv_polars')
+            tag = f'dataframe_{num_rows}_csv_polars_cached'
+            dataframes_dict = read_data_store_execution_time(dataframes_dict, tag, f'synthetic_data/data_csv/dataset_{num_rows}', data_format='csv_polars_cached')
 
-                tag = f'dataframe_{num_rows}_csv_polars_cached'
-                dataframes_dict = read_data_store_execution_time(dataframes_dict, tag, f'synthetic_data/data_csv/dataset_{num_rows}', data_format='csv_polars_cached')
+            st.write('----------------------')
 
-                st.write('----------------------')
+    st.session_state.read_data_complete = True
+    st.success('All data was succesfully read!', icon="✅")
 
-        st.session_state.read_data_complete = True
-        st.success('All data was succesfully read!', icon="✅")
+    # Extracting the execution times in a dataframe so that we can plot
+    execution_time_df = execution_times_df(dataframes_dict)
 
-        # Extracting the execution times in a dataframe so that we can plot
-        execution_time_df = execution_times_df(dataframes_dict)
+    # Storing the execution_time_df in session state so that we can compare the first run vs following runs
+    if st.session_state.first_run_execution_time_csv_df is None:
+        st.session_state.first_run_execution_time_csv_df = execution_time_df.copy()
+        set_first_run_execution_times(execution_time_df)
 
-        # Storing the execution_time_df in session state so that we can compare the first run vs following runs
-        if st.session_state.first_run_execution_time_csv_df is None:
-            st.session_state.first_run_execution_time_csv_df = execution_time_df.copy()
-            set_first_run_execution_times(execution_time_df)
+    comparison_baseline_radio = st.radio(label='Compare execution times against:',
+                                         options=execution_time_df['Data format'].unique())
 
-        comparison_baseline_radio = st.radio(label='Compare execution times against:',
-                                             options=execution_time_df['Data format'].unique())
+    st.divider()
+
+    read_data_button = st.button("Read data for second+ time", type="primary")
 
 # ---------------------------------------------------------------------
 # HOME PAGE - MAIN CONTENT AREA
@@ -119,13 +120,26 @@ else:
                      ' Streamlit is running the actual function and (2) then it is caching it. The caching operation takes a bit of time, so for the first run, '
                      ' caching is slightly worse. The hope is that this is recovered with caching when the function is re-used by the app.')
 
-            st.plotly_chart(plot_execution_time_bar_charts(st.session_state.first_run_execution_time_csv_df))
+            col1, col2 = st.columns([1.5, 1])
 
-            diffs = calculate_percent_diff_execution_times(execution_time_df=st.session_state.first_run_execution_time_csv_df,
-                                                           selected_baseline=comparison_baseline_radio
-                                                           )
+            with col1:
+                with st.container(border=True):
+                    st.plotly_chart(plot_execution_time_bar_charts(df=st.session_state.first_run_execution_time_csv_df,
+                                                                   chart_title='How long do different frameworks take to read different volumes of rows?',
+                                                                   )
+                                    )
 
-            st.write(diffs)
+            with col2:
+                with st.container(border=True):
+                    diffs = calculate_percent_diff_execution_times(execution_time_df=st.session_state.first_run_execution_time_csv_df,
+                                                                   selected_baseline=comparison_baseline_radio
+                                                                   )
+
+                    st.plotly_chart(plot_execution_time_comparison_bar_charts(df=diffs,
+                                                                              selected_baseline=comparison_baseline_radio,
+                                                                              chart_title=f'How much faster is reading vs using {comparison_baseline_radio}?',
+                                                                              )
+                                    )
 
         with st.container(border=True):
             st.html('<h6>Second+ run</h6>')
@@ -135,11 +149,23 @@ else:
                      'difference between the pandas cached vs not cached function. Caching is not supported in polars, so the execution time is not improved with '
                      ' Streamlit caching.')
 
-            st.plotly_chart(plot_execution_time_bar_charts(execution_time_df))
+            col1, col2 = st.columns([1.5, 1])
 
-    st.dataframe(execution_time_df)
+            with col1:
+                with st.container(border=True):
+                    st.plotly_chart(plot_execution_time_bar_charts(df=execution_time_df,
+                                                                   chart_title='How long do different frameworks take to read different volumes of rows?',
+                                                                   )
+                                    )
 
-    st.write(dataframes_dict)
-    # st.write(dataframes_dict['dataframe_1000_csv'])
-    # st.write(dataframes_dict['dataframe_1000_csv']['dataframe'])
-    # st.write(dataframes_dict['dataframe_1000_csv']['execution_time'])
+            with col2:
+                with st.container(border=True):
+                    diffs_cached = calculate_percent_diff_execution_times(execution_time_df=execution_time_df,
+                                                                          selected_baseline=comparison_baseline_radio
+                                                                          )
+
+                    st.plotly_chart(plot_execution_time_comparison_bar_charts(df=diffs_cached,
+                                                                              selected_baseline=comparison_baseline_radio,
+                                                                              chart_title=f'How much faster is reading vs using {comparison_baseline_radio}?',
+                                                                              )
+                                    )
