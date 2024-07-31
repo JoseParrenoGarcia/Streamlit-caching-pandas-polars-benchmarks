@@ -5,7 +5,6 @@ def pages_format():
     show_pages(
         [
             Page("streamlit_app.py", "Home", "🏠", in_section=False),
-            Page("pages/generate_synthetic_data.py", "Generate synthetic data", "🏗️", in_section=False),
             Page("pages/data_read.py", "Reading data", "📖", in_section=False),
             # Page("pages/impressions.py", "Impression data", "👁️", in_section=False),
             # Section(name="Highlights", icon="⭐"),  # Non-clickable section
