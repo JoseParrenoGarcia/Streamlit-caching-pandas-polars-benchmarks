@@ -35,7 +35,7 @@ def pd_to_pl_transform_execution_time(loaded_data, dataframes_dict, df_tag, tag,
     execution_time = time.time() - start_time
 
     dataframes_dict[tag] = {
-        'execution_time_pd_to_pl_transform': execution_time
+        'execution_time': execution_time
     }
 
     return dataframes_dict

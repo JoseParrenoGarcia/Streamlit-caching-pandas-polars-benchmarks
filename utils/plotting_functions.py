@@ -2,8 +2,11 @@ import plotly.express as px
 
 color_mapping = {
     'pandas': px.colors.qualitative.Plotly[0],
+    'pandas_to_polars': px.colors.qualitative.Plotly[0],
     'pandas_cached': px.colors.qualitative.Plotly[1],
+    'pandas_to_polars_cached': px.colors.qualitative.Plotly[1],
     'polars': px.colors.qualitative.Plotly[2],
+    'polars_to_pandas': px.colors.qualitative.Plotly[2],
     'polars_cached': px.colors.qualitative.Plotly[3],
 }
 
