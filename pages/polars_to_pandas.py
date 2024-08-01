@@ -60,7 +60,7 @@ else:
     loaded_data = st.session_state.loaded_dataframes
 
     with st.sidebar:
-        with st.status("Transforming data...", expanded=True):
+        with st.status("Transforming data...", expanded=False):
             # Dictionary to store execution times of transforming dataframes
             dataframes_dict = {}
 
@@ -78,22 +78,22 @@ else:
                 tag = f'dataframe_{num_rows}_polars_to_pandas'
                 dataframes_dict = pd_to_pl_transform_execution_time(loaded_data=loaded_data, dataframes_dict=dataframes_dict, df_tag=df_tag, tag=tag, data_format='polars_to_pandas')
 
-            st.success('All data was succesfully transformed!', icon="✅")
+        st.success('All data was succesfully transformed!', icon="✅")
 
-            # Extracting the execution times in a dataframe so that we can plot
-            execution_time_df = execution_times_df(dataframes_dict)
+        # Extracting the execution times in a dataframe so that we can plot
+        execution_time_df = execution_times_df(dataframes_dict)
 
-            # Storing the execution_time_df in session state so that we can compare the first run vs following runs
-            if st.session_state.first_run_execution_time_pd_to_pl_df is None:
-                st.session_state.first_run_execution_time_pd_to_pl_df = execution_time_df.copy()
-                set_first_run_execution_times(execution_time_df)
+        # Storing the execution_time_df in session state so that we can compare the first run vs following runs
+        if st.session_state.first_run_execution_time_pd_to_pl_df is None:
+            st.session_state.first_run_execution_time_pd_to_pl_df = execution_time_df.copy()
+            set_first_run_execution_times(execution_time_df)
 
-            comparison_baseline_radio = st.radio(label='Compare execution times against:',
-                                                 options=execution_time_df['Data format'].unique())
+        comparison_baseline_radio = st.radio(label='Compare execution times against:',
+                                             options=execution_time_df['Data format'].unique())
 
-            st.divider()
+        st.divider()
 
-            read_data_button = st.button("Transform pandas to polars 2nd+ time", type="primary")
+        read_data_button = st.button("Transform pandas to polars 2nd+ time", type="primary")
 
 
 # ---------------------------------------------------------------------
