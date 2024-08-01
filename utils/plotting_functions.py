@@ -1,4 +1,5 @@
 import plotly.express as px
+import math
 
 color_mapping = {
     'pandas': px.colors.qualitative.Plotly[0],
@@ -39,6 +40,19 @@ def _format_number_of_rows(num_str):
         return str(num)
 
 
+def _calculate_minor_dtick(max_value):
+    ranges = [
+        (0, 1, 0.05),
+        (1, 10, 0.2),
+        (10, 20, 0.5),
+        (20, 100, 5),
+    ]
+
+    for lower, upper, dtick in ranges:
+        if lower <= max_value < upper:
+            return dtick
+
+
 def plot_execution_time_bar_charts(df, chart_title=''):
     df['nrows_string'] = df['Number of rows'].astype(int).apply(_format_number_of_rows)
 
@@ -59,7 +73,7 @@ def plot_execution_time_bar_charts(df, chart_title=''):
     fig.for_each_trace(lambda trace: trace.update(textfont_color=trace.marker.color))
 
     _xaxis_primary_basic_formatting(fig=fig, feature='Number of rows')
-    _yaxis_primary_basic_formatting(fig=fig, feature='Execution time (s)')
+    _yaxis_primary_basic_formatting(fig=fig, feature='Execution time (s)', manual_minor_dtick=_calculate_minor_dtick(df['Execution Time'].max()))
 
     fig.update_layout(title=dict(text=chart_title), template='plotly_white', height=420, width=750)
 
@@ -86,7 +100,7 @@ def plot_execution_time_comparison_bar_charts(df, selected_baseline, chart_title
     fig.for_each_trace(lambda trace: trace.update(textfont_color=trace.marker.color))
 
     _xaxis_primary_basic_formatting(fig=fig, feature='Number of rows')
-    _yaxis_primary_basic_formatting(fig=fig, feature=f'Ratio of {selected_baseline} / other formats', manual_minor_dtick=0.5)
+    _yaxis_primary_basic_formatting(fig=fig, feature=f'Ratio of {selected_baseline} / other formats', manual_minor_dtick=_calculate_minor_dtick(df['Ratio'].max()))
 
     fig.update_layout(title=dict(text=chart_title), template='plotly_white', height=420, width=600)
 
