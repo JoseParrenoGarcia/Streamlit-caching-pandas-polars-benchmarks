@@ -1,6 +1,8 @@
 import streamlit as st
 from pages.pages_format import pages_format
+from datetime import datetime
 from utils.common import get_first_run_execution_times, set_first_run_execution_times, clear_cache
+from utils.filtering_functions import filtering_execution_time
 from utils.execution_times import execution_times_df, calculate_percent_diff_execution_times
 from utils.plotting_functions import plot_execution_time_bar_charts, plot_execution_time_comparison_bar_charts
 
@@ -49,40 +51,54 @@ else:
     loaded_data = st.session_state.loaded_dataframes
 
     with st.sidebar:
-        with st.status("Transforming data...", expanded=False):
+
+        with st.form('filtering_form'):
+            date_filter = st.date_input(label="Date filter:",
+                                        value=(datetime(2023, 1, 1), datetime(2024, 12, 31)),
+                                        min_value=datetime(2023, 1, 1),
+                                        max_value=datetime(2024, 12, 31),
+                                        format="YYYY-MM-DD")
+
+            device_filter = st.multiselect('Device:', options=['Desktop', 'Mobile'], placeholder='----')
+
+            roi_filter = st.slider("ROI", 0.75, 1.55)
+
+            submitted = st.form_submit_button("Filter data (check the filter combinations)",  type="primary")
+            if submitted:
+                st.write("date", date_filter, "checkbox", device_filter, 'slider', roi_filter)
+
+        with st.status("Filtering data...", expanded=False):
             # Dictionary to store execution times of transforming dataframes
             dataframes_dict = {}
 
-            # # List of dataset sizes
-            # for num_rows in datasets:
-            #     df_tag = f'dataframe_{num_rows}_csv_pandas'
-            #
-            #     tag = f'dataframe_{num_rows}_pandas_to_polars'
-            #     dataframes_dict = pd_to_pl_transform_execution_time(loaded_data=loaded_data, dataframes_dict=dataframes_dict, df_tag=df_tag, tag=tag, data_format='pandas_to_polars')
-            #
-            #     tag = f'dataframe_{num_rows}_pandas_to_polars_cached'
-            #     dataframes_dict = pd_to_pl_transform_execution_time(loaded_data=loaded_data, dataframes_dict=dataframes_dict, df_tag=df_tag, tag=tag, data_format='pandas_to_polars_cached')
-            #
-            #     df_tag = f'dataframe_{num_rows}_csv_polars'
-            #     tag = f'dataframe_{num_rows}_polars_to_pandas'
-            #     dataframes_dict = pd_to_pl_transform_execution_time(loaded_data=loaded_data, dataframes_dict=dataframes_dict, df_tag=df_tag, tag=tag, data_format='polars_to_pandas')
+            # List of dataset sizes
+            for num_rows in datasets:
+                df_tag = f'dataframe_{num_rows}_csv_pandas'
 
-        st.success('All data was succesfully transformed!', icon="✅")
+                tag = f'dataframe_{num_rows}_pandas'
+                dataframes_dict = filtering_execution_time(loaded_data=loaded_data, dataframes_dict=dataframes_dict, df_tag=df_tag, tag=tag, data_format='pandas')
 
-        # # Extracting the execution times in a dataframe so that we can plot
-        # execution_time_df = execution_times_df(dataframes_dict)
-        #
-        # # Storing the execution_time_df in session state so that we can compare the first run vs following runs
-        # if st.session_state.first_run_execution_time_pd_to_pl_df is None:
-        #     st.session_state.first_run_execution_time_pd_to_pl_df = execution_time_df.copy()
-        #     set_first_run_execution_times(execution_time_df)
-        #
-        # comparison_baseline_radio = st.radio(label='Compare execution times against:',
-        #                                      options=execution_time_df['Data format'].unique())
+                tag = f'dataframe_{num_rows}_pandas_cached'
+                dataframes_dict = filtering_execution_time(loaded_data=loaded_data, dataframes_dict=dataframes_dict, df_tag=df_tag, tag=tag, data_format='pandas_cached')
+
+                df_tag = f'dataframe_{num_rows}_csv_polars'
+                tag = f'dataframe_{num_rows}_polars'
+                dataframes_dict = filtering_execution_time(loaded_data=loaded_data, dataframes_dict=dataframes_dict, df_tag=df_tag, tag=tag, data_format='polars')
+
+        st.success('All data was succesfully filtered!', icon="✅")
+
+        # Extracting the execution times in a dataframe so that we can plot
+        execution_time_df = execution_times_df(dataframes_dict)
+
+        # Storing the execution_time_df in session state so that we can compare the first run vs following runs
+        if st.session_state.first_run_execution_time_filtering_df is None:
+            st.session_state.first_run_execution_time_filtering_df = execution_time_df.copy()
+            set_first_run_execution_times(execution_time_df)
+
+        comparison_baseline_radio = st.radio(label='Compare execution times against:',
+                                             options=execution_time_df['Data format'].unique())
 
         st.divider()
-
-        read_data_button = st.button("Transform pandas to polars 2nd+ time", type="primary")
 
 
 # ---------------------------------------------------------------------
@@ -91,7 +107,9 @@ else:
 if 'first_run_execution_time_csv_df' in st.session_state:
     with st.container(border=True):
         st.html('<h4>Speed of filtering data in pandas, cached pandas and polars</h4>')
-        st.write('xxx')
+        st.write('talk about caching specific inputs')
+        st.write(execution_time_df)
+        # st.write(loaded_data)
 
     with st.container(border=True):
         st.html('<h5>Comparing execution times</h5>')
