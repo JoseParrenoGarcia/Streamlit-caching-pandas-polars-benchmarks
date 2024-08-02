@@ -24,6 +24,7 @@ if 'first_run_execution_time_pd_to_pl_df' not in st.session_state:
 
 datasets = [1_000, 10_000, 100_000, 1_000_000, 10_000_000]
 
+
 # ---------------------------------------------------------------------
 # CACHE FUNCTION TO PERSIST FIRST RUN EXECUTION TIMES
 # ---------------------------------------------------------------------
