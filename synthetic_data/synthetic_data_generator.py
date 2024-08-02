@@ -53,11 +53,11 @@ def generate_dataset(num_rows,
         csv_filename = os.path.join(output_dir_csv, f'dataset_{num_rows}_subset{i + 1}.csv')
         subset_df.to_csv(csv_filename, index=False)
 
-        # Parquet
-        output_dir_parquet = f'data_parquet/dataset_{num_rows}'
-        os.makedirs(output_dir_parquet, exist_ok=True)
-        parquet_filename = os.path.join(output_dir_parquet, f'dataset_{num_rows}_subset{i + 1}.parquet')
-        subset_df.to_parquet(parquet_filename, index=False)
+        # # Parquet
+        # output_dir_parquet = f'data_parquet/dataset_{num_rows}'
+        # os.makedirs(output_dir_parquet, exist_ok=True)
+        # parquet_filename = os.path.join(output_dir_parquet, f'dataset_{num_rows}_subset{i + 1}.parquet')
+        # subset_df.to_parquet(parquet_filename, index=False)
 
     return df
 
