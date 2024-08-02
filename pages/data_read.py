@@ -1,8 +1,9 @@
 import streamlit as st
 from pages.pages_format import pages_format
-from utils.read_data_functions import read_data_store_execution_time, read_and_combine_csv_files_polars_cached, read_and_combine_csv_files_pandas_cached
+from utils.read_data_functions import read_data_store_execution_time
 from utils.plotting_functions import plot_execution_time_bar_charts, plot_execution_time_comparison_bar_charts
 from utils.execution_times import execution_times_df, calculate_percent_diff_execution_times
+from utils.common import get_first_run_execution_times, set_first_run_execution_times, clear_cache
 
 # ---------------------------------------------------------------------
 # HOME PAGE - CONFIGURATION
@@ -34,19 +35,6 @@ datasets = [1_000, 10_000, 100_000, 1_000_000, 10_000_000]
 # ---------------------------------------------------------------------
 # CACHE FUNCTION TO PERSIST FIRST RUN EXECUTION TIMES
 # ---------------------------------------------------------------------
-def get_first_run_execution_times():
-    return None
-
-
-@st.cache_data
-def set_first_run_execution_times(df):
-    return df
-
-def clear_cache():
-    read_and_combine_csv_files_pandas_cached.clear()
-    read_and_combine_csv_files_polars_cached.clear()
-
-
 # Clear cache on page refresh (if session state is reset)
 if st.session_state.is_first_run:
     clear_cache()

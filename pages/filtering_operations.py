@@ -1,5 +1,6 @@
 import streamlit as st
 from pages.pages_format import pages_format
+from utils.common import get_first_run_execution_times, set_first_run_execution_times, clear_cache
 from utils.execution_times import execution_times_df, calculate_percent_diff_execution_times
 from utils.plotting_functions import plot_execution_time_bar_charts, plot_execution_time_comparison_bar_charts
 
@@ -27,21 +28,9 @@ datasets = [1_000, 10_000, 100_000, 1_000_000, 10_000_000]
 # ---------------------------------------------------------------------
 # CACHE FUNCTION TO PERSIST FIRST RUN EXECUTION TIMES
 # ---------------------------------------------------------------------
-def get_first_run_execution_times():
-    return None
-
-
-@st.cache_data
-def set_first_run_execution_times(df):
-    return df
-
-# def clear_cache():
-#     pandas_to_polars_transformation_cached.clear()
-
-
 # Clear cache on page refresh (if session state is reset)
 if st.session_state.is_first_run:
-    # clear_cache()
+    clear_cache()
     st.session_state.is_first_run = False
 
 # Load initial execution times from cache if they exist
