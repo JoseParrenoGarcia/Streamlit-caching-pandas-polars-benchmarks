@@ -61,11 +61,11 @@ else:
 
             device_filter = st.multiselect('Device:', options=['Desktop', 'Mobile'], placeholder='----')
 
-            roi_filter = st.slider("ROI", 0.75, 1.55)
+            ROI_filter = st.slider("ROI", 0.75, 1.55, (0.75, 1.55))
 
             submitted = st.form_submit_button("Filter data (check the filter combinations)",  type="primary")
             if submitted:
-                st.write("date", date_filter, "checkbox", device_filter, 'slider', roi_filter)
+                st.write("date", date_filter, "checkbox", device_filter, 'slider', ROI_filter)
 
         with st.status("Filtering data...", expanded=False):
             # Dictionary to store execution times of transforming dataframes
@@ -76,14 +76,17 @@ else:
                 df_tag = f'dataframe_{num_rows}_csv_pandas'
 
                 tag = f'dataframe_{num_rows}_pandas'
-                dataframes_dict = filtering_execution_time(loaded_data=loaded_data, dataframes_dict=dataframes_dict, df_tag=df_tag, tag=tag, data_format='pandas')
+                dataframes_dict = filtering_execution_time(loaded_data=loaded_data, dataframes_dict=dataframes_dict, df_tag=df_tag, tag=tag, data_format='pandas',
+                                                           dates_filter=date_filter, device_filter=device_filter, ROI_filter=ROI_filter)
 
                 tag = f'dataframe_{num_rows}_pandas_cached'
-                dataframes_dict = filtering_execution_time(loaded_data=loaded_data, dataframes_dict=dataframes_dict, df_tag=df_tag, tag=tag, data_format='pandas_cached')
+                dataframes_dict = filtering_execution_time(loaded_data=loaded_data, dataframes_dict=dataframes_dict, df_tag=df_tag, tag=tag, data_format='pandas_cached',
+                                                           dates_filter=date_filter, device_filter=device_filter, ROI_filter=ROI_filter)
 
                 df_tag = f'dataframe_{num_rows}_csv_polars'
                 tag = f'dataframe_{num_rows}_polars'
-                dataframes_dict = filtering_execution_time(loaded_data=loaded_data, dataframes_dict=dataframes_dict, df_tag=df_tag, tag=tag, data_format='polars')
+                dataframes_dict = filtering_execution_time(loaded_data=loaded_data, dataframes_dict=dataframes_dict, df_tag=df_tag, tag=tag, data_format='polars',
+                                                           dates_filter=date_filter, device_filter=device_filter, ROI_filter=ROI_filter)
 
         st.success('All data was succesfully filtered!', icon="✅")
 
@@ -109,6 +112,7 @@ if 'first_run_execution_time_csv_df' in st.session_state:
         st.html('<h4>Speed of filtering data in pandas, cached pandas and polars</h4>')
         st.write('talk about caching specific inputs')
         st.write(execution_time_df)
+        st.write(dataframes_dict['dataframe_1000_pandas'])
         # st.write(loaded_data)
 
     with st.container(border=True):
