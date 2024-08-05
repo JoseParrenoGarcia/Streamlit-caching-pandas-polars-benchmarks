@@ -4,6 +4,7 @@ from utils.read_data_functions import read_data_store_execution_time
 from utils.plotting_functions import plot_execution_time_bar_charts, plot_execution_time_comparison_bar_charts
 from utils.execution_times import execution_times_df, calculate_percent_diff_execution_times
 from utils.common import get_first_run_execution_times, set_first_run_execution_times, clear_cache
+from synthetic_data.synthetic_data_generator import datasets
 
 # ---------------------------------------------------------------------
 # HOME PAGE - CONFIGURATION
@@ -28,8 +29,6 @@ if 'loaded_dataframes' not in st.session_state:
 
 if 'is_first_run' not in st.session_state:
     st.session_state.is_first_run = True
-
-datasets = [1_000, 10_000, 100_000, 1_000_000, 10_000_000]
 
 
 # ---------------------------------------------------------------------

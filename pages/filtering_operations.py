@@ -5,6 +5,7 @@ from utils.common import get_first_run_execution_times, set_first_run_execution_
 from utils.filtering_functions import filtering_execution_time
 from utils.execution_times import execution_times_df, calculate_percent_diff_execution_times
 from utils.plotting_functions import plot_execution_time_bar_charts, plot_execution_time_comparison_bar_charts
+from synthetic_data.synthetic_data_generator import datasets
 
 # ---------------------------------------------------------------------
 # HOME PAGE - CONFIGURATION
@@ -23,9 +24,6 @@ if 'is_first_run' not in st.session_state:
 
 if 'first_run_execution_time_filtering_df' not in st.session_state:
     st.session_state.first_run_execution_time_filtering_df = None
-
-datasets = [1_000, 10_000, 100_000, 1_000_000, 10_000_000]
-
 
 # ---------------------------------------------------------------------
 # CACHE FUNCTION TO PERSIST FIRST RUN EXECUTION TIMES

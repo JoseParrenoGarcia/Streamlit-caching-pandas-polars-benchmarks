@@ -1,8 +1,17 @@
 import pandas as pd
 import numpy as np
-from datetime import datetime, timedelta
+from datetime import datetime
 import os
 
+# datasets = [1_000, 10_000, 100_000, 1_000_000, 10_000_000]
+datasets = [1_000]
+
+markets = [
+    'UK', 'US', 'ES', 'JP', 'AU', 'BR', 'MX', 'DE', 'FR', 'IT',
+    'CA', 'CN', 'IN', 'RU', 'ZA', 'AR', 'NL', 'SE', 'NO', 'DK',
+    'FI', 'BE', 'CH', 'AT', 'PL', 'PT', 'GR', 'TR', 'EG', 'SA',
+    'AE', 'SG', 'MY', 'TH', 'ID', 'PH', 'VN', 'NZ', 'KR', 'IL'
+]
 
 def generate_dataset(num_rows,
                      start_date=datetime(2023, 1, 1),
@@ -22,6 +31,7 @@ def generate_dataset(num_rows,
     roi = np.round(np.random.uniform(0.75, 1.55, num_rows), 3)
     revenue = np.round(cost * roi, 3)
     device = np.random.choice(['Desktop', 'Mobile'], num_rows)
+    market = np.random.choice(markets, num_rows)
 
     # Create DataFrame
     df = pd.DataFrame({
@@ -61,8 +71,8 @@ def generate_dataset(num_rows,
 
     return df
 
-# Generate datasets
-datasets = [1_000, 10_000, 100_000, 1_000_000, 10_000_000]
 
-for num_rows in datasets:
-    generate_dataset(num_rows)
+def run_data_generator(num_rows):
+    # Generate datasets
+    for num_rows in datasets:
+        generate_dataset(num_rows)
