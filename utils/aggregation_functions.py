@@ -21,6 +21,12 @@ def aggregating_pandas(df: pd.DataFrame, list_of_grp_by_fields=None) -> pd.DataF
                    )
               )
 
+        # Rename columns to clarify which operation was performed
+        df.columns = [f'{col}_{"Sum" if col in sum_fields else "Avg"}' for col in df.columns]
+
+        # Reset index to make 'Device' and 'Market' regular columns again
+        df = df.reset_index()
+
     return df
 
 
@@ -53,26 +59,26 @@ def _clean_tag(tag):
     return tag
 
 
-# def aggregation_execution_time(loaded_data, dataframes_dict, df_tag, tag, list_of_grp_by_fields, data_format='pandas_filtering',):
-#     clean_tag = _clean_tag(tag)
-#
-#     st.write(clean_tag)
-#     start_time = time.time()
-#
-#     if data_format == 'pandas':
-#         aux_df = filtering_pandas(df=loaded_data[df_tag]['dataframe'], list_of_grp_by_fields=list_of_grp_by_fields)
-#     elif data_format == 'pandas_cached':
-#         aux_df = filtering_pandas_cached(df=loaded_data[df_tag]['dataframe'], list_of_grp_by_fields=list_of_grp_by_fields)
-#     elif data_format == 'polars':
-#         aux_df = filtering_polars(df=loaded_data[df_tag]['dataframe'], list_of_grp_by_fields=list_of_grp_by_fields)
-#     else:
-#         aux_df = filtering_pandas(df=loaded_data[df_tag]['dataframe'])
-#
-#     execution_time = time.time() - start_time
-#
-#     dataframes_dict[tag] = {
-#         'dataframe': aux_df,
-#         'execution_time': execution_time
-#     }
-#
-#     return dataframes_dict
+def aggregation_execution_time(loaded_data, dataframes_dict, df_tag, tag, list_of_grp_by_fields, data_format='pandas_filtering',):
+    clean_tag = _clean_tag(tag)
+
+    st.write(clean_tag)
+    start_time = time.time()
+
+    if data_format == 'pandas':
+        aux_df = aggregating_pandas(df=loaded_data[df_tag]['dataframe'], list_of_grp_by_fields=list_of_grp_by_fields)
+    elif data_format == 'pandas_cached':
+        aux_df = aggregating_pandas_cached(df=loaded_data[df_tag]['dataframe'], list_of_grp_by_fields=list_of_grp_by_fields)
+    elif data_format == 'polars':
+        aux_df = aggregating_polars(df=loaded_data[df_tag]['dataframe'], list_of_grp_by_fields=list_of_grp_by_fields)
+    else:
+        aux_df = aggregating_pandas(df=loaded_data[df_tag]['dataframe'])
+
+    execution_time = time.time() - start_time
+
+    dataframes_dict[tag] = {
+        'dataframe': aux_df,
+        'execution_time': execution_time
+    }
+
+    return dataframes_dict

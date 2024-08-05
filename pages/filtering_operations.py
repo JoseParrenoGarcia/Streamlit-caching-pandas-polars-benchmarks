@@ -112,7 +112,11 @@ if 'first_run_execution_time_csv_df' in st.session_state:
                  ' combination of inputs to a function changes, streamlit has to cache that function/data. Lets see if its worth all that caching vs using polars')
 
         st.write('**Dataframe after filtering**')
-        st.dataframe(dataframes_dict['dataframe_1000_pandas']['dataframe'])
+        with st.expander('Pandas dataframe', expanded=False):
+            st.dataframe(dataframes_dict['dataframe_1000_pandas']['dataframe'])
+
+        with st.expander('Polars dataframe', expanded=False):
+            st.dataframe(dataframes_dict['dataframe_1000_polars']['dataframe'])
 
     with st.container(border=True):
         st.html('<h5>Comparing execution times</h5>')
