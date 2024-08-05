@@ -77,3 +77,8 @@ def run_data_generator():
     # Generate datasets
     for num_rows in datasets:
         generate_dataset(num_rows)
+
+
+if __name__ == "__main__":
+    run_data_generator()
+    
