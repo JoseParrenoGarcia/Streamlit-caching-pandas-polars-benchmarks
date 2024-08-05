@@ -43,7 +43,8 @@ def generate_dataset(num_rows,
         'Cost': cost,
         'ROI': roi,
         'Revenue': revenue,
-        'Device': device
+        'Device': device,
+        'Market': market,
     })
 
     # Save as CSV and Parquet
@@ -81,4 +82,3 @@ def run_data_generator():
 
 if __name__ == "__main__":
     run_data_generator()
-    
