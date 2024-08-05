@@ -64,8 +64,6 @@ else:
             ROI_filter = st.slider("ROI", 0.75, 1.55, (0.75, 1.55))
 
             submitted = st.form_submit_button("Filter data (check the filter combinations)",  type="primary")
-            if submitted:
-                st.write("date", date_filter, "checkbox", device_filter, 'slider', ROI_filter)
 
         with st.status("Filtering data...", expanded=False):
             # Dictionary to store execution times of transforming dataframes
@@ -110,10 +108,11 @@ else:
 if 'first_run_execution_time_csv_df' in st.session_state:
     with st.container(border=True):
         st.html('<h4>Speed of filtering data in pandas, cached pandas and polars</h4>')
-        st.write('talk about caching specific inputs')
-        st.write(execution_time_df)
-        st.write(dataframes_dict['dataframe_1000_pandas'])
-        # st.write(loaded_data)
+        st.write('Caching in when dealing with filtering operations is quite interesting. Streamlit caches the combination of inputs to the dataframe. So, every time a new'
+                 ' combination of inputs to a function changes, streamlit has to cache that function/data. Lets see if its worth all that caching vs using polars')
+
+        st.write('**Dataframe after filtering**')
+        st.dataframe(dataframes_dict['dataframe_1000_pandas']['dataframe'])
 
     with st.container(border=True):
         st.html('<h5>Comparing execution times</h5>')
@@ -125,54 +124,46 @@ if 'first_run_execution_time_csv_df' in st.session_state:
 
             with col1:
                 with st.container(border=True):
-                    st.write('hello')
-                    # st.plotly_chart(plot_execution_time_bar_charts(df=st.session_state.first_run_execution_time_pd_to_pl_df,
-                    #                                                chart_title='How fast is the conversion between frameworks?',
-                    #                                                )
-                    #                 )
+                    st.plotly_chart(plot_execution_time_bar_charts(df=st.session_state.first_run_execution_time_filtering_df,
+                                                                   chart_title='Filtering speed',
+                                                                   )
+                                    )
 
             with col2:
                 with st.container(border=True):
-                    st.write('hello')
-                    # diffs = calculate_percent_diff_execution_times(execution_time_df=st.session_state.first_run_execution_time_pd_to_pl_df,
-                    #                                                selected_baseline=comparison_baseline_radio
-                    #                                                )
-                    #
-                    # st.plotly_chart(plot_execution_time_comparison_bar_charts(df=diffs,
-                    #                                                           selected_baseline=comparison_baseline_radio,
-                    #                                                           chart_title=f'How much faster is conversion vs using {comparison_baseline_radio}?',
-                    #                                                           )
-                    #                 )
+                    diffs = calculate_percent_diff_execution_times(execution_time_df=st.session_state.first_run_execution_time_filtering_df,
+                                                                   selected_baseline=comparison_baseline_radio
+                                                                   )
+
+                    st.plotly_chart(plot_execution_time_comparison_bar_charts(df=diffs,
+                                                                              selected_baseline=comparison_baseline_radio,
+                                                                              chart_title=f'How much faster is filtering vs using {comparison_baseline_radio}?',
+                                                                              )
+                                    )
 
         with st.container(border=True):
             st.html('<h6>Second+ run</h6>')
-            st.write('If you havent clicked the **XXX** a second time, please do so that caching can take effect...')
+            st.write('If you havent clicked the **Filter data** a second time, please do so that caching can take effect...')
             st.write('   ')
-            st.write('When you hit **XXX** the second time (or the read functions are used a second time), caching should kick in. '
-                     'We have added a cached function to transform pandas to polars. We havent been able to add a cached one when we wanted to transform polars to pandas. '
-                     'This is because polars is not an accepted format to cache. Nevertheless, we will compare execution times of polars to pandas, and pandas to polars (cached '
-                     'and not cached)')
 
             col1, col2 = st.columns([1.5, 1])
 
             with col1:
                 with st.container(border=True):
-                    st.write('hello')
-                    # st.plotly_chart(plot_execution_time_bar_charts(df=execution_time_df,
-                    #                                                chart_title='How fast is the conversion between frameworks?',
-                    #                                                )
-                    #                 )
+                    st.plotly_chart(plot_execution_time_bar_charts(df=execution_time_df,
+                                                                   chart_title='Filtering speed',
+                                                                   )
+                                    )
 
             with col2:
                 with st.container(border=True):
-                    st.write('hello')
-                    # diffs_cached = calculate_percent_diff_execution_times(execution_time_df=execution_time_df,
-                    #                                                       selected_baseline=comparison_baseline_radio
-                    #                                                       )
-                    #
-                    # st.plotly_chart(plot_execution_time_comparison_bar_charts(df=diffs_cached,
-                    #                                                           selected_baseline=comparison_baseline_radio,
-                    #                                                           chart_title=f'How much faster is conversion vs using {comparison_baseline_radio}?',
-                    #                                                           )
-                    #                 )
+                    diffs_cached = calculate_percent_diff_execution_times(execution_time_df=execution_time_df,
+                                                                          selected_baseline=comparison_baseline_radio
+                                                                          )
+
+                    st.plotly_chart(plot_execution_time_comparison_bar_charts(df=diffs_cached,
+                                                                              selected_baseline=comparison_baseline_radio,
+                                                                              chart_title=f'How much faster is filtering vs using {comparison_baseline_radio}?',
+                                                                              )
+                                    )
 
