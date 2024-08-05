@@ -3,8 +3,8 @@ import numpy as np
 from datetime import datetime
 import os
 
-# datasets = [1_000, 10_000, 100_000, 1_000_000, 10_000_000]
-datasets = [1_000_000, 10_000_000]
+datasets = [1_000, 10_000, 100_000, 1_000_000, 10_000_000]
+# datasets = [1_000_000, 10_000_000]
 
 markets = [
     'UK', 'US', 'ES', 'JP', 'AU', 'BR', 'MX', 'DE', 'FR', 'IT',

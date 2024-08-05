@@ -5,7 +5,7 @@ from utils.common import get_first_run_execution_times, set_first_run_execution_
 from utils.filtering_functions import filtering_execution_time
 from utils.execution_times import execution_times_df, calculate_percent_diff_execution_times
 from utils.plotting_functions import plot_execution_time_bar_charts, plot_execution_time_comparison_bar_charts
-from synthetic_data.synthetic_data_generator import datasets
+from synthetic_data.synthetic_data_generator import datasets, markets
 
 # ---------------------------------------------------------------------
 # HOME PAGE - CONFIGURATION
@@ -59,6 +59,8 @@ else:
 
             device_filter = st.multiselect('Device:', options=['Desktop', 'Mobile'], placeholder='----')
 
+            market_filter = st.multiselect('Market:', options=markets, placeholder='----')
+
             ROI_filter = st.slider("ROI", 0.75, 1.55, (0.75, 1.55))
 
             submitted = st.form_submit_button("Filter data (check the filter combinations)",  type="primary")
@@ -73,16 +75,16 @@ else:
 
                 tag = f'dataframe_{num_rows}_pandas'
                 dataframes_dict = filtering_execution_time(loaded_data=loaded_data, dataframes_dict=dataframes_dict, df_tag=df_tag, tag=tag, data_format='pandas',
-                                                           dates_filter=date_filter, device_filter=device_filter, ROI_filter=ROI_filter)
+                                                           dates_filter=date_filter, device_filter=device_filter, ROI_filter=ROI_filter, market_filter=market_filter)
 
                 tag = f'dataframe_{num_rows}_pandas_cached'
                 dataframes_dict = filtering_execution_time(loaded_data=loaded_data, dataframes_dict=dataframes_dict, df_tag=df_tag, tag=tag, data_format='pandas_cached',
-                                                           dates_filter=date_filter, device_filter=device_filter, ROI_filter=ROI_filter)
+                                                           dates_filter=date_filter, device_filter=device_filter, ROI_filter=ROI_filter, market_filter=market_filter)
 
                 df_tag = f'dataframe_{num_rows}_csv_polars'
                 tag = f'dataframe_{num_rows}_polars'
                 dataframes_dict = filtering_execution_time(loaded_data=loaded_data, dataframes_dict=dataframes_dict, df_tag=df_tag, tag=tag, data_format='polars',
-                                                           dates_filter=date_filter, device_filter=device_filter, ROI_filter=ROI_filter)
+                                                           dates_filter=date_filter, device_filter=device_filter, ROI_filter=ROI_filter, market_filter=market_filter)
 
         st.success('All data was succesfully filtered!', icon="✅")
 

@@ -10,6 +10,7 @@ def filtering_pandas(df: pd.DataFrame,
                      dates_filter=None,
                      device_filter=None,
                      ROI_filter=None,
+                     market_filter=None
                      ) -> pd.DataFrame:
 
     if dates_filter:
@@ -22,6 +23,9 @@ def filtering_pandas(df: pd.DataFrame,
     if device_filter:
         df = df[df['Device'].isin(device_filter)]
 
+    if market_filter:
+        df = df[df['Market'].isin(market_filter)]
+
     if ROI_filter:
         df = df[(df['ROI'] >= ROI_filter[0]) & (df['ROI'] <= ROI_filter[1])]
 
@@ -29,14 +33,15 @@ def filtering_pandas(df: pd.DataFrame,
 
 
 @st.cache_data()
-def filtering_pandas_cached(df: pd.DataFrame, dates_filter, device_filter, ROI_filter,) -> pd.DataFrame:
-    return filtering_pandas(df, dates_filter, device_filter, ROI_filter)
+def filtering_pandas_cached(df: pd.DataFrame, dates_filter, device_filter, ROI_filter, market_filter) -> pd.DataFrame:
+    return filtering_pandas(df, dates_filter, device_filter, ROI_filter, market_filter)
 
 
 def filtering_polars(df: pl.DataFrame,
                      dates_filter=None,
                      device_filter=None,
                      ROI_filter=None,
+                     market_filter=None
                      ) -> pl.DataFrame:
 
     if dates_filter:
@@ -46,6 +51,9 @@ def filtering_polars(df: pl.DataFrame,
 
     if device_filter:
         df = df.filter(pl.col('Device').is_in(device_filter))
+
+    if market_filter:
+        df = df.filter(pl.col('Market').is_in(market_filter))
 
     if ROI_filter:
         df = df.filter((pl.col('ROI') >= ROI_filter[0]) & (pl.col('ROI') <= ROI_filter[1]))
@@ -66,18 +74,18 @@ def _clean_tag(tag):
     return tag
 
 
-def filtering_execution_time(loaded_data, dataframes_dict, df_tag, tag, dates_filter, device_filter, ROI_filter, data_format='pandas_filtering',):
+def filtering_execution_time(loaded_data, dataframes_dict, df_tag, tag, dates_filter, device_filter, ROI_filter, market_filter, data_format='pandas_filtering',):
     clean_tag = _clean_tag(tag)
 
     st.write(clean_tag)
     start_time = time.time()
 
     if data_format == 'pandas':
-        aux_df = filtering_pandas(df=loaded_data[df_tag]['dataframe'], dates_filter=dates_filter, device_filter=device_filter, ROI_filter=ROI_filter)
+        aux_df = filtering_pandas(df=loaded_data[df_tag]['dataframe'], dates_filter=dates_filter, device_filter=device_filter, ROI_filter=ROI_filter, market_filter=market_filter)
     elif data_format == 'pandas_cached':
-        aux_df = filtering_pandas_cached(df=loaded_data[df_tag]['dataframe'], dates_filter=dates_filter, device_filter=device_filter, ROI_filter=ROI_filter)
+        aux_df = filtering_pandas_cached(df=loaded_data[df_tag]['dataframe'], dates_filter=dates_filter, device_filter=device_filter, ROI_filter=ROI_filter, market_filter=market_filter)
     elif data_format == 'polars':
-        aux_df = filtering_polars(df=loaded_data[df_tag]['dataframe'], dates_filter=dates_filter, device_filter=device_filter, ROI_filter=ROI_filter)
+        aux_df = filtering_polars(df=loaded_data[df_tag]['dataframe'], dates_filter=dates_filter, device_filter=device_filter, ROI_filter=ROI_filter, market_filter=market_filter)
     else:
         aux_df = filtering_pandas(df=loaded_data[df_tag]['dataframe'])
 
