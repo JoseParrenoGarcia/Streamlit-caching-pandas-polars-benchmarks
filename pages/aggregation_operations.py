@@ -45,5 +45,33 @@ if 'first_run_execution_time_csv_df' not in st.session_state:
     st.warning('Please navigate to the "Read data" page to load the data')
 else:
     loaded_data = st.session_state.loaded_dataframes
-    st.write('hello')
 
+    with st.sidebar:
+
+        with st.form('aggregation_form'):
+            aggregation_fields = st.multiselect('Aggregated by:', options=['Date', 'Device', 'Market'], placeholder='----')
+
+            submitted = st.form_submit_button("Aggregate data (check the field combinations)",  type="primary")
+
+        with st.status("Aggregating data...", expanded=False):
+            # Dictionary to store execution times of transforming dataframes
+            dataframes_dict = {}
+
+            # List of dataset sizes
+            for num_rows in datasets:
+                df_tag = f'dataframe_{num_rows}_csv_pandas'
+                #
+                # tag = f'dataframe_{num_rows}_pandas'
+                # dataframes_dict = filtering_execution_time(loaded_data=loaded_data, dataframes_dict=dataframes_dict, df_tag=df_tag, tag=tag, data_format='pandas',
+                #                                            dates_filter=date_filter, device_filter=device_filter, ROI_filter=ROI_filter, market_filter=market_filter)
+                #
+                # tag = f'dataframe_{num_rows}_pandas_cached'
+                # dataframes_dict = filtering_execution_time(loaded_data=loaded_data, dataframes_dict=dataframes_dict, df_tag=df_tag, tag=tag, data_format='pandas_cached',
+                #                                            dates_filter=date_filter, device_filter=device_filter, ROI_filter=ROI_filter, market_filter=market_filter)
+                #
+                # df_tag = f'dataframe_{num_rows}_csv_polars'
+                # tag = f'dataframe_{num_rows}_polars'
+                # dataframes_dict = filtering_execution_time(loaded_data=loaded_data, dataframes_dict=dataframes_dict, df_tag=df_tag, tag=tag, data_format='polars',
+                #                                            dates_filter=date_filter, device_filter=device_filter, ROI_filter=ROI_filter, market_filter=market_filter)
+
+        st.success('All data was succesfully filtered!', icon="✅")
