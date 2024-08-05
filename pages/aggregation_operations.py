@@ -52,6 +52,10 @@ else:
         with st.form('aggregation_form'):
             aggregation_fields = st.multiselect('Aggregated by:', options=['Date', 'Device', 'Market'], default=['Date'], placeholder='----')
 
+            cumsum_operation = st.checkbox(f'Cumulative sum of clicks ordered by {aggregation_fields[0]}')
+
+            ranking_operation = st.checkbox(f'Ranking of revenue')
+
             submitted = st.form_submit_button("Aggregate data (check the field combinations)",  type="primary")
 
         with st.status("Aggregating data...", expanded=False):
@@ -64,16 +68,24 @@ else:
 
                 tag = f'dataframe_{num_rows}_pandas'
                 dataframes_dict = aggregation_execution_time(loaded_data=loaded_data, dataframes_dict=dataframes_dict, df_tag=df_tag, tag=tag, data_format='pandas',
-                                                             list_of_grp_by_fields=aggregation_fields)
+                                                             list_of_grp_by_fields=aggregation_fields,
+                                                             cumsum_operation=cumsum_operation,
+                                                             ranking_operation=ranking_operation)
 
                 tag = f'dataframe_{num_rows}_pandas_cached'
                 dataframes_dict = aggregation_execution_time(loaded_data=loaded_data, dataframes_dict=dataframes_dict, df_tag=df_tag, tag=tag, data_format='pandas_cached',
-                                                             list_of_grp_by_fields=aggregation_fields)
+                                                             list_of_grp_by_fields=aggregation_fields,
+                                                             cumsum_operation=cumsum_operation,
+                                                             ranking_operation=ranking_operation
+                                                             )
 
                 df_tag = f'dataframe_{num_rows}_csv_polars'
                 tag = f'dataframe_{num_rows}_polars'
                 dataframes_dict = aggregation_execution_time(loaded_data=loaded_data, dataframes_dict=dataframes_dict, df_tag=df_tag, tag=tag, data_format='polars',
-                                                             list_of_grp_by_fields=aggregation_fields)
+                                                             list_of_grp_by_fields=aggregation_fields,
+                                                             cumsum_operation=cumsum_operation,
+                                                             ranking_operation=ranking_operation
+                                                             )
 
         st.success('All data was succesfully filtered!', icon="✅")
 
