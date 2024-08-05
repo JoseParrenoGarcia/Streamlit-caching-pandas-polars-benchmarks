@@ -72,7 +72,7 @@ def generate_dataset(num_rows,
     return df
 
 
-def run_data_generator(num_rows):
+def run_data_generator():
     # Generate datasets
     for num_rows in datasets:
         generate_dataset(num_rows)
