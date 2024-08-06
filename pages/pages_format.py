@@ -8,6 +8,7 @@ def pages_format():
             Page("pages/data_read.py", "Reading data", "📖", in_section=False),
             Page("pages/filtering_operations.py", "Filtering data", "✂️", in_section=False),
             Page("pages/aggregation_operations.py", "Aggregating data", "📦", in_section=False),
+            Page("pages/join_operations.py", "Joining data", "🤝", in_section=False),
             Page("pages/polars_to_pandas.py", "Polars to pandas (and viceversa)", "🔄", in_section=False),
 
         ]
