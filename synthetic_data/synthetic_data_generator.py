@@ -13,6 +13,7 @@ markets = [
     'AE', 'SG', 'MY', 'TH', 'ID', 'PH', 'VN', 'NZ', 'KR', 'IL'
 ]
 
+
 def generate_dataset(num_rows,
                      start_date=datetime(2023, 1, 1),
                      end_date=datetime(2024, 12, 31),
@@ -74,10 +75,27 @@ def generate_dataset(num_rows,
     return df
 
 
+def create_secondary_dataset():
+    # Creating dataset so that we can join
+    df = pd.DataFrame(markets, columns=['market'])
+
+    # Add 'clickshare' column with random values between 1% and 10%
+    df['clickshare'] = np.random.uniform(0.01, 0.10, len(markets))
+
+    output_dir_csv = 'data_csv/dataset_markets'
+    os.makedirs(output_dir_csv, exist_ok=True)
+    csv_filename = os.path.join(output_dir_csv, 'markets.csv')
+    df.to_csv(csv_filename, index=False)
+
+    print(f'Saved {csv_filename}')
+
+
 def run_data_generator():
     # Generate datasets
     for num_rows in datasets:
         generate_dataset(num_rows)
+
+    create_secondary_dataset()
 
 
 if __name__ == "__main__":
