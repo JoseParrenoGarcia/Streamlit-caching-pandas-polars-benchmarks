@@ -77,7 +77,7 @@ def generate_dataset(num_rows,
 
 def create_secondary_dataset():
     # Creating dataset so that we can join
-    df = pd.DataFrame(markets, columns=['market'])
+    df = pd.DataFrame(markets, columns=['Market'])
 
     # Add 'clickshare' column with random values between 1% and 10%
     df['clickshare'] = np.random.uniform(0.01, 0.10, len(markets))
