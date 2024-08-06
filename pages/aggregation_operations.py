@@ -1,6 +1,5 @@
 import streamlit as st
 from pages.pages_format import pages_format
-from datetime import datetime
 from utils.common import get_first_run_execution_times, set_first_run_execution_times, clear_cache
 from utils.aggregation_functions import aggregation_execution_time
 from utils.execution_times import execution_times_df, calculate_percent_diff_execution_times
