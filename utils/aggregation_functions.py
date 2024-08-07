@@ -56,6 +56,9 @@ def aggregating_polars(df: pl.DataFrame,
                        ranking_operation=None,
                        ) -> pl.DataFrame:
     if list_of_grp_by_fields:
+        if 'Date' in list_of_grp_by_fields:
+            df = df.with_columns(pl.col('Date').cast(pl.Date))
+
         agg_exprs = [
             *[pl.col(field).sum().alias(f"{field}_Sum") for field in sum_fields],
             *[pl.col(field).mean().alias(f"{field}_Avg") for field in mean_fields]

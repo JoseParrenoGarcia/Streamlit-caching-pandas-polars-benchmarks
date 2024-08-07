@@ -49,7 +49,7 @@ else:
     with st.sidebar:
 
         with st.form('aggregation_form'):
-            aggregation_fields = st.multiselect('Aggregated by:', options=['Date', 'Device', 'Market'], default=['Date'], placeholder='----')
+            aggregation_fields = st.multiselect('Aggregated by:', options=['Date', 'Device', 'Market'], default=['Device', 'Market'], placeholder='----')
 
             cumsum_operation = st.checkbox(f'Cumulative sum of clicks ordered by {aggregation_fields[0]}')
 
