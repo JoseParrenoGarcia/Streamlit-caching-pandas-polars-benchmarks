@@ -35,7 +35,6 @@ def read_and_combine_csv_files_polars_cached_functools(folder_path):
     return df.join(markets_polars_df, on='Market', how='inner')
 
 
-
 @functools.lru_cache
 def pandas_etl(folder_path,
                dates_filter=None, device_filter=None, market_filter=None, ROI_filter=None,
@@ -74,7 +73,6 @@ def pandas_etl(folder_path,
 
     return df
 
-
 @functools.lru_cache
 def polars_etl(folder_path,
                dates_filter=None, device_filter=None, market_filter=None, ROI_filter=None,
@@ -110,31 +108,25 @@ def polars_etl(folder_path,
     return df
 
 
-def functools_etl(folder_path,
+def functools_etl(folder_path, num_rows, dataframes_dict,
                   dates_filter=None, device_filter=None, market_filter=None, ROI_filter=None,
                   list_of_grp_by_fields=None
                   ):
-    print('')
-    print('----------------------------------------------------------------------------------------')
-    print(folder_path)
-    print('----------------------------------------------------------------------------------------')
-    start_time = time.time()
-    df_read = read_and_combine_csv_files_pandas_cached_functools(folder_path)
-    execution_time = time.time() - start_time
-    print('Pandas read execution time in seconds: {}'.format(execution_time))
 
-    start_time = time.time()
-    df_read = read_and_combine_csv_files_polars_cached_functools(folder_path)
-    execution_time = time.time() - start_time
-    print('Polars read execution time in seconds: {}'.format(execution_time))
-
-    start_time = time.time()
     # Convert mutable arguments to immutable types
     immutable_device_filter = tuple(device_filter) if device_filter else None
     immutable_market_filter = tuple(market_filter) if market_filter else None
     immutable_ROI_filter = tuple(ROI_filter) if ROI_filter else None
     immutable_list_of_grp_by_fields = tuple(list_of_grp_by_fields) if list_of_grp_by_fields else None
 
+    print('')
+    print('----------------------------------------------------------------------------------------')
+    print(folder_path)
+    print('----------------------------------------------------------------------------------------')
+
+    tag = f'dataframe_{num_rows}_csv_pandas'
+
+    start_time = time.time()
     pandas_df = pandas_etl(folder_path=folder_path,
                            dates_filter=dates_filter,
                            device_filter=immutable_device_filter,
@@ -145,13 +137,14 @@ def functools_etl(folder_path,
     execution_time = time.time() - start_time
     print('Pandas ETL execution time in seconds: {}'.format(execution_time))
 
-    start_time = time.time()
-    # Convert mutable arguments to immutable types
-    immutable_device_filter = tuple(device_filter) if device_filter else None
-    immutable_market_filter = tuple(market_filter) if market_filter else None
-    immutable_ROI_filter = tuple(ROI_filter) if ROI_filter else None
-    immutable_list_of_grp_by_fields = tuple(list_of_grp_by_fields) if list_of_grp_by_fields else None
+    dataframes_dict[tag] = {
+        'dataframe': pandas_df,
+        'execution_time': execution_time
+    }
 
+    tag = f'dataframe_{num_rows}_csv_polars'
+
+    start_time = time.time()
     polars_df = polars_etl(folder_path=folder_path,
                            dates_filter=dates_filter,
                            device_filter=immutable_device_filter,
@@ -162,4 +155,9 @@ def functools_etl(folder_path,
     execution_time = time.time() - start_time
     print('Polars ETL execution time in seconds: {}'.format(execution_time))
 
-    return pandas_df
+    dataframes_dict[tag] = {
+        'dataframe': polars_df,
+        'execution_time': execution_time
+    }
+
+    return dataframes_dict

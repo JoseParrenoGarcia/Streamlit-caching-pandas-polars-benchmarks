@@ -61,8 +61,8 @@ with st.sidebar:
             tag = f'dataframe_{num_rows}_csv_pandas_cached'
             dataframes_dict = read_data_store_execution_time(dataframes_dict, tag, f'synthetic_data/data_csv/dataset_{num_rows}', data_format='csv_pandas_cached')
 
-            tag = f'dataframe_{num_rows}_csv_pandas_functools'
-            dataframes_dict = read_data_store_execution_time(dataframes_dict, tag, f'synthetic_data/data_csv/dataset_{num_rows}', data_format='csv_pandas_functools')
+            # tag = f'dataframe_{num_rows}_csv_pandas_functools'
+            # dataframes_dict = read_data_store_execution_time(dataframes_dict, tag, f'synthetic_data/data_csv/dataset_{num_rows}', data_format='csv_pandas_functools')
 
             tag = f'dataframe_{num_rows}_csv_polars'
             dataframes_dict = read_data_store_execution_time(dataframes_dict, tag, f'synthetic_data/data_csv/dataset_{num_rows}', data_format='csv_polars')
