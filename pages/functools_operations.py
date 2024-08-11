@@ -27,9 +27,7 @@ with st.sidebar:
     with st.form('execution_form'):
         st.write('**Aggregate by:**')
 
-        aggregation_fields = st.multiselect('Aggregated by:', options=['Date', 'Device', 'Market'], default=['Device', 'Market'], placeholder='----')
-        cumsum_operation = st.checkbox(f'Cumulative sum of clicks ordered by {aggregation_fields[0]}')
-        ranking_operation = st.checkbox(f'Ranking of revenue')
+        aggregation_fields = st.multiselect('Aggregated by:', options=['Date', 'Device', 'Market'], placeholder='----')
 
         st.divider()
 
@@ -53,10 +51,8 @@ with st.sidebar:
 # HOME PAGE - MAIN CONTENT AREA
 # ---------------------------------------------------------------------
 if submitted:
-    st.write(tuple(date_filter) if date_filter else None)
-    st.write(tuple(device_filter) if device_filter else None)
-    st.write(tuple(market_filter) if market_filter else None)
-    st.write(tuple(ROI_filter) if ROI_filter else None)
+    st.write(tuple(aggregation_fields) if date_filter else None)
+    st.write(list(tuple(aggregation_fields) if date_filter else None))
     dataframes_dict = {}
 
     for num_rows in datasets:
@@ -67,7 +63,8 @@ if submitted:
                                dates_filter=date_filter,
                                device_filter=device_filter,
                                market_filter=market_filter,
-                               ROI_filter=ROI_filter
+                               ROI_filter=ROI_filter,
+                               list_of_grp_by_fields=aggregation_fields,
                                )
         execution_time = time.time() - start_time
 
