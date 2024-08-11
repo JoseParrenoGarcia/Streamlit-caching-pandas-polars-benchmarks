@@ -10,6 +10,7 @@ def pages_format():
             Page("pages/aggregation_operations.py", "Aggregating data", "📦", in_section=False),
             Page("pages/join_operations.py", "Joining data", "🤝", in_section=False),
             Page("pages/polars_to_pandas.py", "Polars to pandas (and viceversa)", "🔄", in_section=False),
+            Page("pages/functools_operations.py", "Functools specific", "🛠️", in_section=False),
 
         ]
     )
