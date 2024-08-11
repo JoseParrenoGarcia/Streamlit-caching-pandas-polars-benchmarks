@@ -53,8 +53,10 @@ with st.sidebar:
 # HOME PAGE - MAIN CONTENT AREA
 # ---------------------------------------------------------------------
 if submitted:
-    st.write(date_filter)
-
+    st.write(tuple(date_filter) if date_filter else None)
+    st.write(tuple(device_filter) if device_filter else None)
+    st.write(tuple(market_filter) if market_filter else None)
+    st.write(tuple(ROI_filter) if ROI_filter else None)
     dataframes_dict = {}
 
     for num_rows in datasets:
@@ -62,7 +64,11 @@ if submitted:
 
         start_time = time.time()
         aux_df = functools_etl(folder_path=f'synthetic_data/data_csv/dataset_{num_rows}',
-                               dates_filter=date_filter)
+                               dates_filter=date_filter,
+                               device_filter=device_filter,
+                               market_filter=market_filter,
+                               ROI_filter=ROI_filter
+                               )
         execution_time = time.time() - start_time
 
         dataframes_dict[tag] = {

@@ -1,9 +1,11 @@
 import os
 import pandas as pd
-import streamlit as st
 import time
-import re
 import functools
+
+# @functools.lru_cache decorator requires that all the arguments passed to the cached function be hashable.
+# A pandas.DataFrame is mutable and therefore unhashable. Therefore, we always need to reference the read from CSV, as this is considered non-mutable.
+
 
 
 @functools.lru_cache
@@ -14,7 +16,7 @@ def read_and_combine_csv_files_pandas_cached_functools(folder_path):
 
 
 @functools.lru_cache
-def filtering_functools(folder_path, dates_filter=None,):
+def filtering_functools(folder_path, dates_filter=None, device_filter=None, market_filter=None, ROI_filter=None):
     df = read_and_combine_csv_files_pandas_cached_functools(folder_path)
 
     if dates_filter:
@@ -24,10 +26,20 @@ def filtering_functools(folder_path, dates_filter=None,):
         end_date = pd.to_datetime(dates_filter[1])
         df = df[(df['Date'] >= start_date) & (df['Date'] <= end_date)]
 
+    if device_filter:
+        df = df[df['Device'].isin(device_filter)]
+
+    if market_filter:
+        df = df[df['Market'].isin(market_filter)]
+
+    if ROI_filter:
+        df = df[(df['ROI'] >= ROI_filter[0]) & (df['ROI'] <= ROI_filter[1])]
+
+
     return df
 
 
-def functools_etl(folder_path, dates_filter=None):
+def functools_etl(folder_path, dates_filter=None, device_filter=None, market_filter=None, ROI_filter=None):
     print('')
     print('----------------------------------------------------------------------------------------')
     print(folder_path)
@@ -38,7 +50,16 @@ def functools_etl(folder_path, dates_filter=None):
     print('Read execution time in seconds: {}'.format(execution_time))
 
     start_time = time.time()
-    df_filter = filtering_functools(folder_path=folder_path, dates_filter=dates_filter)
+    # Convert mutable arguments to immutable types
+    immutable_device_filter = tuple(device_filter) if device_filter else None
+    immutable_market_filter = tuple(market_filter) if market_filter else None
+    immutable_ROI_filter = tuple(ROI_filter) if ROI_filter else None
+
+    df_filter = filtering_functools(folder_path=folder_path,
+                                    dates_filter=dates_filter,
+                                    device_filter=immutable_device_filter,
+                                    market_filter=immutable_market_filter,
+                                    ROI_filter=immutable_ROI_filter)
     execution_time = time.time() - start_time
     print('Filter execution time in seconds: {}'.format(execution_time))
 
