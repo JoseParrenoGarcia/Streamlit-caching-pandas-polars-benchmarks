@@ -64,8 +64,8 @@ with st.sidebar:
             tag = f'dataframe_{num_rows}_csv_polars'
             dataframes_dict = read_data_store_execution_time(dataframes_dict, tag, f'synthetic_data/data_csv/dataset_{num_rows}', data_format='csv_polars')
 
-            tag = f'dataframe_{num_rows}_csv_polars_cached'
-            dataframes_dict = read_data_store_execution_time(dataframes_dict, tag, f'synthetic_data/data_csv/dataset_{num_rows}', data_format='csv_polars_cached')
+            # tag = f'dataframe_{num_rows}_csv_polars_cached'
+            # dataframes_dict = read_data_store_execution_time(dataframes_dict, tag, f'synthetic_data/data_csv/dataset_{num_rows}', data_format='csv_polars_cached')
 
             st.write('----------------------')
 
@@ -105,58 +105,18 @@ else:
         st.html('<h5>CSV files</h5>')
 
         with st.container(border=True):
-            st.html('<h6>First run</h6>')
-            st.write('Caching doesnt happen the first time you read. Therefore, we dont expect performance differences between the pandas read when its cached or not. '
-                     ' The same is expected between cached and not-cached polar reads. In fact, we should see a slightly higher execution time, because (1) first, '
-                     ' Streamlit is running the actual function and (2) then it is caching it. The caching operation takes a bit of time, so for the first run, '
-                     ' caching is slightly worse. The hope is that this is recovered with caching when the function is re-used by the app.')
-
-            col1, col2 = st.columns([1.5, 1])
-
-            with col1:
-                with st.container(border=True):
-                    st.plotly_chart(plot_execution_time_bar_charts(df=st.session_state.first_run_execution_time_csv_df,
-                                                                   chart_title='How long do different frameworks take to read different volumes of rows?',
-                                                                   )
-                                    )
-
-            with col2:
-                with st.container(border=True):
-                    diffs = calculate_percent_diff_execution_times(execution_time_df=st.session_state.first_run_execution_time_csv_df,
-                                                                   selected_baseline=comparison_baseline_radio
-                                                                   )
-
-                    st.plotly_chart(plot_execution_time_comparison_bar_charts(df=diffs,
-                                                                              selected_baseline=comparison_baseline_radio,
-                                                                              chart_title=f'How much faster is reading vs using {comparison_baseline_radio}?',
-                                                                              )
-                                    )
+            st.plotly_chart(plot_execution_time_bar_charts(df=execution_time_df,
+                                                           chart_title='How long do different frameworks take to read different volumes of rows?',
+                                                           )
+                            )
 
         with st.container(border=True):
-            st.html('<h6>Second+ run</h6>')
-            st.write('If you havent clicked the **Read data** a second time, please do so that caching can take effect...')
-            st.write('   ')
-            st.write('When you hit **Read data** the second time (or the read functions are used a second time), caching should kick in. We should see a '
-                     'difference between the pandas cached vs not cached function. Caching is not supported in polars, so the execution time is not improved with '
-                     ' Streamlit caching.')
+            diffs_cached = calculate_percent_diff_execution_times(execution_time_df=execution_time_df,
+                                                                  selected_baseline=comparison_baseline_radio
+                                                                  )
 
-            col1, col2 = st.columns([1.5, 1])
-
-            with col1:
-                with st.container(border=True):
-                    st.plotly_chart(plot_execution_time_bar_charts(df=execution_time_df,
-                                                                   chart_title='How long do different frameworks take to read different volumes of rows?',
-                                                                   )
-                                    )
-
-            with col2:
-                with st.container(border=True):
-                    diffs_cached = calculate_percent_diff_execution_times(execution_time_df=execution_time_df,
-                                                                          selected_baseline=comparison_baseline_radio
-                                                                          )
-
-                    st.plotly_chart(plot_execution_time_comparison_bar_charts(df=diffs_cached,
-                                                                              selected_baseline=comparison_baseline_radio,
-                                                                              chart_title=f'How much faster is reading vs using {comparison_baseline_radio}?',
-                                                                              )
-                                    )
+            st.plotly_chart(plot_execution_time_comparison_bar_charts(df=diffs_cached,
+                                                                      selected_baseline=comparison_baseline_radio,
+                                                                      chart_title=f'How much faster is reading vs using {comparison_baseline_radio}?',
+                                                                      )
+                            )
