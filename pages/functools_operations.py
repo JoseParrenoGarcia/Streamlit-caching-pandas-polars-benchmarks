@@ -51,8 +51,6 @@ with st.sidebar:
 # HOME PAGE - MAIN CONTENT AREA
 # ---------------------------------------------------------------------
 if submitted:
-    st.write(tuple(aggregation_fields) if date_filter else None)
-    st.write(list(tuple(aggregation_fields) if date_filter else None))
     dataframes_dict = {}
 
     for num_rows in datasets:
