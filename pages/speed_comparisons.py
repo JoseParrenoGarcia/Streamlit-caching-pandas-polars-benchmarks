@@ -98,6 +98,12 @@ if submitted:
         with st.expander('Polars dataframe', expanded=False):
             st.dataframe(dataframes_dict['dataframe_1000_csv_polars']['dataframe'], hide_index=True)
 
+        with st.expander('Pandas functools cached dataframe', expanded=False):
+            st.dataframe(dataframes_dict['dataframe_1000_csv_pandas_functools_cached']['dataframe'], hide_index=True)
+
+        with st.expander('Polars functools cached dataframe', expanded=False):
+            st.dataframe(dataframes_dict['dataframe_1000_csv_polars_functools_cached']['dataframe'], hide_index=True)
+
     with st.container(border=True):
         st.plotly_chart(plot_execution_time_bar_charts(df=execution_time_df,
                                                        chart_title='How long do different frameworks take to read different volumes of rows?',

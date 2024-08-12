@@ -6,16 +6,6 @@ from utils.aggregation_functions import aggregating_pandas_cached
 from utils.join_functions import join_pandas_cached
 
 
-
-def get_first_run_execution_times():
-    return None
-
-
-@st.cache_data
-def set_first_run_execution_times(df):
-    return df
-
-
 def clear_cache():
     read_and_combine_csv_files_pandas_cached.clear()
     pandas_to_polars_transformation_cached.clear()

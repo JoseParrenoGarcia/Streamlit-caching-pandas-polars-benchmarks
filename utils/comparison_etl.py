@@ -3,6 +3,7 @@ from utils.read_data_functions import read_and_combine_csv_files_pandas, read_an
 from utils.filtering_functions import filtering_pandas, filtering_pandas_cached, filtering_polars
 from utils.aggregation_functions import aggregating_pandas, aggregating_pandas_cached, aggregating_polars
 from utils.join_functions import join_pandas, join_pandas_cached, join_polars
+from utils.functools_functions import pandas_functools_etl, polars_functools_etl
 import pandas as pd
 import polars as pl
 
@@ -82,19 +83,19 @@ def etl_comparisons(folder_path, num_rows, dataframes_dict,
     tag = f'dataframe_{num_rows}_csv_pandas_streamlit_cached'
 
     start_time = time.time()
-    pandas_df = pandas_etl_streamlit_cached(folder_path=folder_path,
-                                            secondary_df=markets_pandas_df,
-                                            dates_filter=dates_filter,
-                                            device_filter=device_filter,
-                                            market_filter=market_filter,
-                                            ROI_filter=ROI_filter,
-                                            list_of_grp_by_fields=list_of_grp_by_fields,
-                                            )
+    pandas_st_cached_df = pandas_etl_streamlit_cached(folder_path=folder_path,
+                                                      secondary_df=markets_pandas_df,
+                                                      dates_filter=dates_filter,
+                                                      device_filter=device_filter,
+                                                      market_filter=market_filter,
+                                                      ROI_filter=ROI_filter,
+                                                      list_of_grp_by_fields=list_of_grp_by_fields,
+                                                      )
     execution_time = time.time() - start_time
     print('Pandas Streamlit Cached ETL execution time in seconds: {}'.format(execution_time))
 
     dataframes_dict[tag] = {
-        'dataframe': pandas_df,
+        'dataframe': pandas_st_cached_df,
         'execution_time': execution_time
     }
 
@@ -115,6 +116,50 @@ def etl_comparisons(folder_path, num_rows, dataframes_dict,
 
     dataframes_dict[tag] = {
         'dataframe': polars_df,
+        'execution_time': execution_time
+    }
+
+    # ----------------------------------------------------------------------------------------------------------------
+    tag = f'dataframe_{num_rows}_csv_pandas_functools_cached'
+
+    # Convert mutable arguments to immutable types
+    immutable_device_filter = tuple(device_filter) if device_filter else None
+    immutable_market_filter = tuple(market_filter) if market_filter else None
+    immutable_ROI_filter = tuple(ROI_filter) if ROI_filter else None
+    immutable_list_of_grp_by_fields = tuple(list_of_grp_by_fields) if list_of_grp_by_fields else None
+
+    start_time = time.time()
+    pandas_functools_cached_df = pandas_functools_etl(folder_path=folder_path,
+                                                      dates_filter=dates_filter,
+                                                      device_filter=immutable_device_filter,
+                                                      market_filter=immutable_market_filter,
+                                                      ROI_filter=immutable_ROI_filter,
+                                                      list_of_grp_by_fields=immutable_list_of_grp_by_fields,
+                                                      )
+    execution_time = time.time() - start_time
+    print('Pandas functools cached ETL execution time in seconds: {}'.format(execution_time))
+
+    dataframes_dict[tag] = {
+        'dataframe': pandas_functools_cached_df,
+        'execution_time': execution_time
+    }
+
+    # ----------------------------------------------------------------------------------------------------------------
+    tag = f'dataframe_{num_rows}_csv_polars_functools_cached'
+
+    start_time = time.time()
+    polars_functools_cached_df = polars_functools_etl(folder_path=folder_path,
+                                                      dates_filter=dates_filter,
+                                                      device_filter=immutable_device_filter,
+                                                      market_filter=immutable_market_filter,
+                                                      ROI_filter=immutable_ROI_filter,
+                                                      list_of_grp_by_fields=immutable_list_of_grp_by_fields,
+                                                      )
+    execution_time = time.time() - start_time
+    print('Polars functools cached ETL execution time in seconds: {}'.format(execution_time))
+
+    dataframes_dict[tag] = {
+        'dataframe': polars_functools_cached_df,
         'execution_time': execution_time
     }
 
