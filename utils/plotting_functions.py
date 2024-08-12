@@ -1,5 +1,4 @@
 import plotly.express as px
-import math
 
 color_mapping = {
     'pandas': px.colors.qualitative.Plotly[0],
