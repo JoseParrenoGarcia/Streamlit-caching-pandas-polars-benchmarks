@@ -11,7 +11,8 @@ def execution_times_df(dataframes_dict):
     execution_time_df = pd.DataFrame(execution_time_df)
     execution_time_df['Number of rows'] = execution_time_df['Tag'].str.extract(r'dataframe_(\d+)')[0].astype(int)
     execution_time_df['Data format'] = execution_time_df['Tag'].str.extract(r'(pandas_to_polars|pandas_to_polars_cached|polars_to_pandas'
-                                                                            r'|pandas|pandas_cached|polars|pandas_functools)$')[0]
+                                                                            r'|pandas|pandas_streamlit_cached|polars|'
+                                                                            r'|pandas_functools_cached|polars_functools_cached)$')[0]
 
     return execution_time_df
 
