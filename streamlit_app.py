@@ -26,7 +26,7 @@ with st.sidebar:
 # ---------------------------------------------------------------------
 # HOME PAGE - MAIN CONTENT AREA
 # ---------------------------------------------------------------------
-st.title('Speed benchmarks for Streamlit caching with Pandas and Polars')
+st.title('Speed benchmarks for Pandas, Polars, Streamlit caching with Pandas, Functools caching with Pandas & Polars')
 
 st.write('')
 st.html("<b>What</b>")

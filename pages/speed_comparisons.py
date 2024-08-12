@@ -1,5 +1,6 @@
 import streamlit as st
 from pages.pages_format import pages_format
+import numpy as np
 from datetime import datetime
 from synthetic_data.synthetic_data_generator import markets
 from utils.comparison_etl import etl_comparisons
@@ -112,7 +113,7 @@ if submitted:
 
     with st.container(border=True):
         comparison_baseline_radio = st.radio(label='Compare execution times against:',
-                                             options=execution_time_df['Data format'].unique(),
+                                             options=np.sort(execution_time_df['Data format'].unique()),
                                              horizontal=True)
 
         diffs_cached = calculate_percent_diff_execution_times(execution_time_df=execution_time_df,
