@@ -1,8 +1,6 @@
 import pandas as pd
 import streamlit as st
-import time
 import polars as pl
-import re
 
 # Fields to sum
 sum_fields = ['Impressions', 'Clicks', 'Cost', 'Revenue']
@@ -48,45 +46,3 @@ def aggregating_polars(df: pl.DataFrame, list_of_grp_by_fields=None) -> pl.DataF
         df = df.group_by(list_of_grp_by_fields).agg(agg_exprs)
 
     return df
-
-# def _clean_tag(tag):
-#     # Remove underscores
-#     tag = tag.replace('_', ' ')
-#
-#     # Convert to title case
-#     tag = tag.title()
-#
-#     # Handle numbers separately to keep them as they are
-#     tag = re.sub(r'(\d+)', lambda x: x.group(1), tag)
-#
-#     return tag
-#
-#
-# def aggregation_execution_time(loaded_data, dataframes_dict, df_tag, tag, list_of_grp_by_fields,
-#                                cumsum_operation, ranking_operation, data_format='pandas_filtering',):
-#     clean_tag = _clean_tag(tag)
-#
-#     st.write(clean_tag)
-#     start_time = time.time()
-#
-#     if data_format == 'pandas':
-#         aux_df = aggregating_pandas(df=loaded_data[df_tag]['dataframe'], list_of_grp_by_fields=list_of_grp_by_fields,
-#                                     cumsum_operation=cumsum_operation, ranking_operation=ranking_operation)
-#     elif data_format == 'pandas_cached':
-#         aux_df = aggregating_pandas_cached(df=loaded_data[df_tag]['dataframe'], list_of_grp_by_fields=list_of_grp_by_fields,
-#                                            cumsum_operation=cumsum_operation, ranking_operation=ranking_operation)
-#     elif data_format == 'polars':
-#         aux_df = aggregating_polars(df=loaded_data[df_tag]['dataframe'], list_of_grp_by_fields=list_of_grp_by_fields,
-#                                     cumsum_operation=cumsum_operation, ranking_operation=ranking_operation
-#                                     )
-#     else:
-#         aux_df = aggregating_pandas(df=loaded_data[df_tag]['dataframe'])
-#
-#     execution_time = time.time() - start_time
-#
-#     dataframes_dict[tag] = {
-#         'dataframe': aux_df,
-#         'execution_time': execution_time
-#     }
-#
-#     return dataframes_dict
