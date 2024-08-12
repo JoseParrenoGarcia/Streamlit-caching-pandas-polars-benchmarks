@@ -1,4 +1,5 @@
 import plotly.express as px
+import plotly.graph_objects as go
 
 color_mapping = {
     'pandas': px.colors.qualitative.Plotly[0],
@@ -75,6 +76,15 @@ def plot_execution_time_bar_charts(df, chart_title=''):
     _yaxis_primary_basic_formatting(fig=fig, feature='Execution time (s)', manual_minor_dtick=_calculate_minor_dtick(df['Execution Time'].max()))
 
     fig.update_layout(title=dict(text=chart_title), template='plotly_white', height=420)
+
+    # Convert to a graph objects figure
+    fig = go.Figure(fig)
+
+    # Sort the traces based on their names
+    sorted_data = sorted(fig.data, key=lambda x: x.name)
+
+    # Update the figure with sorted traces
+    fig.data = sorted_data
 
     return fig
 
