@@ -3,8 +3,9 @@ import numpy as np
 from datetime import datetime
 import os
 
-datasets = [1_000, 10_000, 100_000, 1_000_000, 10_000_000]
-# datasets = [1_000_000, 10_000_000]
+datasets = [1_000, 10_000, 100_000, 1_000_000, 10_000_000, 100_000_000]
+# datasets = [10_000_000, 100_000_000]
+# datasets = [1_000, 10_000]
 
 markets = [
     'UK', 'US', 'ES', 'JP', 'AU', 'BR', 'MX', 'DE', 'FR', 'IT',
@@ -95,7 +96,7 @@ def run_data_generator():
     for num_rows in datasets:
         generate_dataset(num_rows)
 
-    create_secondary_dataset()
+    # create_secondary_dataset()
 
 
 if __name__ == "__main__":

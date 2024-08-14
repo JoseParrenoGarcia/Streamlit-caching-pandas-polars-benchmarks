@@ -100,26 +100,6 @@ def etl_comparisons(folder_path, num_rows, dataframes_dict,
     }
 
     # ----------------------------------------------------------------------------------------------------------------
-    tag = f'dataframe_{num_rows}_csv_polars'
-
-    start_time = time.time()
-    polars_df = polars_etl(folder_path=folder_path,
-                           secondary_df=markets_polars_df,
-                           dates_filter=dates_filter,
-                           device_filter=device_filter,
-                           market_filter=market_filter,
-                           ROI_filter=ROI_filter,
-                           list_of_grp_by_fields=list_of_grp_by_fields,
-                           )
-    execution_time = time.time() - start_time
-    print('Polars ETL execution time in seconds: {}'.format(execution_time))
-
-    dataframes_dict[tag] = {
-        'dataframe': polars_df,
-        'execution_time': execution_time
-    }
-
-    # ----------------------------------------------------------------------------------------------------------------
     tag = f'dataframe_{num_rows}_csv_pandas_functools_cached'
 
     # Convert mutable arguments to immutable types
@@ -144,24 +124,44 @@ def etl_comparisons(folder_path, num_rows, dataframes_dict,
         'execution_time': execution_time
     }
 
-    # ----------------------------------------------------------------------------------------------------------------
-    tag = f'dataframe_{num_rows}_csv_polars_functools_cached'
-
-    start_time = time.time()
-    polars_functools_cached_df = polars_functools_etl(folder_path=folder_path,
-                                                      dates_filter=dates_filter,
-                                                      device_filter=immutable_device_filter,
-                                                      market_filter=immutable_market_filter,
-                                                      ROI_filter=immutable_ROI_filter,
-                                                      list_of_grp_by_fields=immutable_list_of_grp_by_fields,
-                                                      )
-    execution_time = time.time() - start_time
-    print('Polars functools cached ETL execution time in seconds: {}'.format(execution_time))
-
-    dataframes_dict[tag] = {
-        'dataframe': polars_functools_cached_df,
-        'execution_time': execution_time
-    }
+    # # ----------------------------------------------------------------------------------------------------------------
+    # tag = f'dataframe_{num_rows}_csv_polars'
+    #
+    # start_time = time.time()
+    # polars_df = polars_etl(folder_path=folder_path,
+    #                        secondary_df=markets_polars_df,
+    #                        dates_filter=dates_filter,
+    #                        device_filter=device_filter,
+    #                        market_filter=market_filter,
+    #                        ROI_filter=ROI_filter,
+    #                        list_of_grp_by_fields=list_of_grp_by_fields,
+    #                        )
+    # execution_time = time.time() - start_time
+    # print('Polars ETL execution time in seconds: {}'.format(execution_time))
+    #
+    # dataframes_dict[tag] = {
+    #     'dataframe': polars_df,
+    #     'execution_time': execution_time
+    # }
+    #
+    # # ----------------------------------------------------------------------------------------------------------------
+    # tag = f'dataframe_{num_rows}_csv_polars_functools_cached'
+    #
+    # start_time = time.time()
+    # polars_functools_cached_df = polars_functools_etl(folder_path=folder_path,
+    #                                                   dates_filter=dates_filter,
+    #                                                   device_filter=immutable_device_filter,
+    #                                                   market_filter=immutable_market_filter,
+    #                                                   ROI_filter=immutable_ROI_filter,
+    #                                                   list_of_grp_by_fields=immutable_list_of_grp_by_fields,
+    #                                                   )
+    # execution_time = time.time() - start_time
+    # print('Polars functools cached ETL execution time in seconds: {}'.format(execution_time))
+    #
+    # dataframes_dict[tag] = {
+    #     'dataframe': polars_functools_cached_df,
+    #     'execution_time': execution_time
+    # }
 
     return dataframes_dict
 

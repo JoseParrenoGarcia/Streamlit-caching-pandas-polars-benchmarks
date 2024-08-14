@@ -1,14 +1,13 @@
 import plotly.express as px
 import plotly.graph_objects as go
+import pandas as pd
 
 color_mapping = {
     'pandas': px.colors.qualitative.Plotly[0],
-    'pandas_to_polars': px.colors.qualitative.Plotly[0],
-    'pandas_cached': px.colors.qualitative.Plotly[1],
-    'pandas_to_polars_cached': px.colors.qualitative.Plotly[1],
-    'polars': px.colors.qualitative.Plotly[2],
-    'polars_to_pandas': px.colors.qualitative.Plotly[2],
-    'polars_cached': px.colors.qualitative.Plotly[3],
+    'pandas_streamlit_cached': px.colors.qualitative.Plotly[1],
+    'pandas_functools_cached': px.colors.qualitative.Plotly[2],
+    'polars': px.colors.qualitative.Plotly[3],
+    'polars_functools_cached': px.colors.qualitative.Plotly[4],
 }
 
 axis_line_colour = 'rgb(213, 219, 219)'
@@ -56,14 +55,24 @@ def _calculate_minor_dtick(max_value):
 def plot_execution_time_bar_charts(df, chart_title=''):
     df['nrows_string'] = df['Number of rows'].astype(int).apply(_format_number_of_rows)
 
+    # Define the custom order
+    custom_order = ['pandas', 'pandas_streamlit_cached', 'pandas_functools_cached', 'polars', 'polars_functools_cached']
+
+    # Create a categorical column based on the custom order
+    df['Data format ordered'] = pd.Categorical(df['Data format'], categories=custom_order, ordered=True)
+
+    # Sort the dataframe based on the new categorical column
+    df = df.sort_values('Data format ordered')
+
     fig = px.bar(
         df,
         x='nrows_string',
         y='Execution Time',
-        color='Data format',
+        color='Data format ordered',
         barmode='group',
         text_auto=True,
         color_discrete_map=color_mapping,
+        category_orders={'Data format ordered': custom_order}  # Specify the category order
     )
 
     # Update the layout to format text labels
@@ -77,29 +86,30 @@ def plot_execution_time_bar_charts(df, chart_title=''):
 
     fig.update_layout(title=dict(text=chart_title), template='plotly_white', height=420)
 
-    # Convert to a graph objects figure
-    fig = go.Figure(fig)
-
-    # Sort the traces based on their names
-    sorted_data = sorted(fig.data, key=lambda x: x.name)
-
-    # Update the figure with sorted traces
-    fig.data = sorted_data
-
     return fig
 
 
 def plot_execution_time_comparison_bar_charts(df, selected_baseline, chart_title=''):
     df['nrows_string'] = df['Number of rows'].astype(int).apply(_format_number_of_rows)
 
+    # Define the custom order
+    custom_order = ['pandas', 'pandas_streamlit_cached', 'pandas_functools_cached', 'polars', 'polars_functools_cached']
+
+    # Create a categorical column based on the custom order
+    df['Data format ordered'] = pd.Categorical(df['Data format'], categories=custom_order, ordered=True)
+
+    # Sort the dataframe based on the new categorical column
+    df = df.sort_values('Data format ordered')
+
     fig = px.bar(
         df,
         x='nrows_string',
         y='Ratio',
-        color='Data format',
+        color='Data format ordered',
         barmode='group',
         text_auto=True,
         color_discrete_map=color_mapping,
+        category_orders={'Data format ordered': custom_order}  # Specify the category order
     )
 
     # Update the layout to format text labels

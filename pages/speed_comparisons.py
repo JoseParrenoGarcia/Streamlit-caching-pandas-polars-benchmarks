@@ -89,32 +89,33 @@ if submitted:
     # Extracting the execution times in a dataframe so that we can plot
     execution_time_df = execution_times_df(dataframes_dict)
 
-    with st.container(border=True):
-        with st.expander('Pandas dataframe', expanded=False):
-            st.dataframe(dataframes_dict['dataframe_1000_csv_pandas']['dataframe'], hide_index=True)
-
-        with st.expander('Pandas streamlit cached dataframe', expanded=False):
-            st.dataframe(dataframes_dict['dataframe_1000_csv_pandas_streamlit_cached']['dataframe'], hide_index=True)
-
-        with st.expander('Polars dataframe', expanded=False):
-            st.dataframe(dataframes_dict['dataframe_1000_csv_polars']['dataframe'], hide_index=True)
-
-        with st.expander('Pandas functools cached dataframe', expanded=False):
-            st.dataframe(dataframes_dict['dataframe_1000_csv_pandas_functools_cached']['dataframe'], hide_index=True)
-
-        with st.expander('Polars functools cached dataframe', expanded=False):
-            st.dataframe(dataframes_dict['dataframe_1000_csv_polars_functools_cached']['dataframe'], hide_index=True)
+    # with st.container(border=True):
+    #     with st.expander('Pandas dataframe', expanded=False):
+    #         st.dataframe(dataframes_dict['dataframe_1000_csv_pandas']['dataframe'], hide_index=True)
+    #
+    #     with st.expander('Pandas streamlit cached dataframe', expanded=False):
+    #         st.dataframe(dataframes_dict['dataframe_1000_csv_pandas_streamlit_cached']['dataframe'], hide_index=True)
+    #
+    #     with st.expander('Pandas functools cached dataframe', expanded=False):
+    #         st.dataframe(dataframes_dict['dataframe_1000_csv_pandas_functools_cached']['dataframe'], hide_index=True)
+    #
+    #     with st.expander('Polars dataframe', expanded=False):
+    #         st.dataframe(dataframes_dict['dataframe_1000_csv_polars']['dataframe'], hide_index=True)
+    #
+    #     with st.expander('Polars functools cached dataframe', expanded=False):
+    #         st.dataframe(dataframes_dict['dataframe_1000_csv_polars_functools_cached']['dataframe'], hide_index=True)
 
     with st.container(border=True):
         st.plotly_chart(plot_execution_time_bar_charts(df=execution_time_df,
-                                                       chart_title='How long do different frameworks take to read different volumes of rows?',
+                                                       chart_title='',
                                                        )
                         )
 
     with st.container(border=True):
-        comparison_baseline_radio = st.radio(label='Compare execution times against:',
-                                             options=np.sort(execution_time_df['Data format'].unique()),
-                                             horizontal=True)
+        # comparison_baseline_radio = st.radio(label='Compare execution times against:',
+        #                                      options=np.sort(execution_time_df['Data format'].unique()),
+        #                                      horizontal=True)
+        comparison_baseline_radio = 'pandas'
 
         diffs_cached = calculate_percent_diff_execution_times(execution_time_df=execution_time_df,
                                                               selected_baseline=comparison_baseline_radio
