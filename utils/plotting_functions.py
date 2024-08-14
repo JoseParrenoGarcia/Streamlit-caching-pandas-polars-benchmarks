@@ -3,13 +3,12 @@ import plotly.graph_objects as go
 
 color_mapping = {
     'pandas': px.colors.qualitative.Plotly[0],
-    'pandas_to_polars': px.colors.qualitative.Plotly[0],
-    'pandas_cached': px.colors.qualitative.Plotly[1],
-    'pandas_to_polars_cached': px.colors.qualitative.Plotly[1],
-    'polars': px.colors.qualitative.Plotly[2],
-    'polars_to_pandas': px.colors.qualitative.Plotly[2],
-    'polars_cached': px.colors.qualitative.Plotly[3],
+    'pandas_streamlit_cached': px.colors.qualitative.Plotly[1],
+    'pandas_functools_cached': px.colors.qualitative.Plotly[2],
+    'polars': px.colors.qualitative.Plotly[3],
+    'polars_functools_cached': px.colors.qualitative.Plotly[4],
 }
+
 
 axis_line_colour = 'rgb(213, 219, 219)'
 axis_line_width = 2
