@@ -73,6 +73,7 @@ def etl_comparisons(folder_path, num_rows, dataframes_dict,
                            )
     execution_time = time.time() - start_time
     print('Pandas ETL execution time in seconds: {}'.format(execution_time))
+    print('')
 
     dataframes_dict[tag] = {
         'dataframe': pandas_df,
@@ -93,6 +94,7 @@ def etl_comparisons(folder_path, num_rows, dataframes_dict,
                                                       )
     execution_time = time.time() - start_time
     print('Pandas Streamlit Cached ETL execution time in seconds: {}'.format(execution_time))
+    print('')
 
     dataframes_dict[tag] = {
         'dataframe': pandas_st_cached_df,
@@ -118,6 +120,7 @@ def etl_comparisons(folder_path, num_rows, dataframes_dict,
                                                       )
     execution_time = time.time() - start_time
     print('Pandas functools cached ETL execution time in seconds: {}'.format(execution_time))
+    print('')
 
     dataframes_dict[tag] = {
         'dataframe': pandas_functools_cached_df,
@@ -138,6 +141,7 @@ def etl_comparisons(folder_path, num_rows, dataframes_dict,
                            )
     execution_time = time.time() - start_time
     print('Polars ETL execution time in seconds: {}'.format(execution_time))
+    print('')
 
     dataframes_dict[tag] = {
         'dataframe': polars_df,
@@ -157,6 +161,7 @@ def etl_comparisons(folder_path, num_rows, dataframes_dict,
                                                       )
     execution_time = time.time() - start_time
     print('Polars functools cached ETL execution time in seconds: {}'.format(execution_time))
+    print('')
 
     dataframes_dict[tag] = {
         'dataframe': polars_functools_cached_df,
