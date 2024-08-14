@@ -107,7 +107,7 @@ if submitted:
 
     with st.container(border=True):
         st.plotly_chart(plot_execution_time_bar_charts(df=execution_time_df,
-                                                       chart_title='How long do different frameworks take to read different volumes of rows?',
+                                                       chart_title=' ',
                                                        )
                         )
 
