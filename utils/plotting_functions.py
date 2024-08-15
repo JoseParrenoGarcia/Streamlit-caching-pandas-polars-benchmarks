@@ -1,5 +1,6 @@
 import plotly.express as px
 import plotly.graph_objects as go
+import pandas as pd
 
 color_mapping = {
     'pandas': px.colors.qualitative.Plotly[0],
@@ -12,6 +13,9 @@ color_mapping = {
 
 axis_line_colour = 'rgb(213, 219, 219)'
 axis_line_width = 2
+
+# Define the custom order
+custom_order = ['pandas', 'pandas_streamlit_cached', 'pandas_functools_cached', 'polars', 'polars_functools_cached']
 
 
 def _yaxis_primary_basic_formatting(fig, feature, manual_minor_dtick=0.2):
@@ -52,17 +56,30 @@ def _calculate_minor_dtick(max_value):
             return dtick
 
 
-def plot_execution_time_bar_charts(df, chart_title=''):
+def _format_df(df):
     df['nrows_string'] = df['Number of rows'].astype(int).apply(_format_number_of_rows)
+
+    # Create a categorical column based on the custom order
+    df['Data format ordered'] = pd.Categorical(df['Data format'], categories=custom_order, ordered=True)
+
+    # # Sort the dataframe based on the new categorical column
+    # df = df.sort_values('Data format ordered')
+
+    return df
+
+
+def plot_execution_time_bar_charts(df, chart_title=''):
+    df = _format_df(df)
 
     fig = px.bar(
         df,
         x='nrows_string',
         y='Execution Time',
-        color='Data format',
+        color='Data format ordered',  # Use the categorical column
         barmode='group',
         text_auto=True,
-        color_discrete_map=color_mapping,
+        color_discrete_map={cat: color_mapping[cat] for cat in custom_order},  # Update color_mapping to use the new categorical column,
+        category_orders={'Data format ordered': custom_order}
     )
 
     # Update the layout to format text labels
@@ -76,29 +93,30 @@ def plot_execution_time_bar_charts(df, chart_title=''):
 
     fig.update_layout(title=dict(text=chart_title), template='plotly_white', height=420)
 
-    # Convert to a graph objects figure
-    fig = go.Figure(fig)
-
-    # Sort the traces based on their names
-    sorted_data = sorted(fig.data, key=lambda x: x.name)
-
-    # Update the figure with sorted traces
-    fig.data = sorted_data
+    # # Convert to a graph objects figure
+    # fig = go.Figure(fig)
+    #
+    # # Sort the traces based on their names
+    # sorted_data = sorted(fig.data, key=lambda x: x.name)
+    #
+    # # Update the figure with sorted traces
+    # fig.data = sorted_data
 
     return fig
 
 
 def plot_execution_time_comparison_bar_charts(df, selected_baseline, chart_title=''):
-    df['nrows_string'] = df['Number of rows'].astype(int).apply(_format_number_of_rows)
+    df = _format_df(df)
 
     fig = px.bar(
         df,
         x='nrows_string',
         y='Ratio',
-        color='Data format',
+        color='Data format ordered',  # Use the categorical column
         barmode='group',
         text_auto=True,
-        color_discrete_map=color_mapping,
+        color_discrete_map={cat: color_mapping[cat] for cat in custom_order},  # Update color_mapping to use the new categorical column,
+        category_orders={'Data format ordered': custom_order}
     )
 
     # Update the layout to format text labels
