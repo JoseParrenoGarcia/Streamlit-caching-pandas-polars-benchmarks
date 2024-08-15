@@ -21,17 +21,23 @@ pages_format()
 # ---------------------------------------------------------------------
 # INITIALISE SESSION_STATE VARIABLES
 # ---------------------------------------------------------------------
-if 'read_data_complete' not in st.session_state:
-    st.session_state.read_data_complete = False
-
-if 'first_run_execution_time_csv_df' not in st.session_state:
-    st.session_state.first_run_execution_time_csv_df = None
-
-# if 'loaded_dataframes' not in st.session_state:
-#     st.session_state.loaded_dataframes = None
-
 if 'is_first_run' not in st.session_state:
     st.session_state.is_first_run = True
+
+if 'aggregation_fields' not in st.session_state:
+    st.session_state.aggregation_fields = False
+
+if 'date_filter' not in st.session_state:
+    st.session_state.date_filter = False
+
+if 'device_filter' not in st.session_state:
+    st.session_state.device_filter = False
+
+if 'market_filter' not in st.session_state:
+    st.session_state.market_filter = False
+
+if 'ROI_filter' not in st.session_state:
+    st.session_state.ROI_filter = False
 
 
 # ---------------------------------------------------------------------
@@ -69,26 +75,39 @@ with st.sidebar:
 
         submitted = st.form_submit_button("Execute", type="primary")
 
+    if submitted:
+        dataframes_dict = {}
+
+        for num_rows in datasets:
+            dataframes_dict = etl_comparisons(folder_path=f'synthetic_data/data_csv/dataset_{num_rows}',
+                                              num_rows=num_rows,
+                                              dataframes_dict=dataframes_dict,
+                                              dates_filter=date_filter,
+                                              device_filter=device_filter,
+                                              market_filter=market_filter,
+                                              ROI_filter=ROI_filter,
+                                              list_of_grp_by_fields=aggregation_fields,
+                                              )
+
+        # Extracting the execution times in a dataframe so that we can plot
+        execution_time_df = execution_times_df(dataframes_dict)
+
+        st.session_state.aggregation_fields = aggregation_fields
+        st.session_state.date_filter = date_filter
+        st.session_state.device_filter = device_filter
+        st.session_state.market_filter = market_filter
+        st.session_state.ROI_filter = ROI_filter
+
+    st.write(st.session_state.aggregation_fields)
+    st.write(st.session_state.date_filter)
+    st.write(st.session_state.device_filter)
+    st.write(st.session_state.market_filter)
+    st.write(st.session_state.ROI_filter)
+
 # ---------------------------------------------------------------------
 # HOME PAGE - MAIN CONTENT AREA
 # ---------------------------------------------------------------------
 if submitted:
-    dataframes_dict = {}
-
-    for num_rows in datasets:
-        dataframes_dict = etl_comparisons(folder_path=f'synthetic_data/data_csv/dataset_{num_rows}',
-                                          num_rows=num_rows,
-                                          dataframes_dict=dataframes_dict,
-                                          dates_filter=date_filter,
-                                          device_filter=device_filter,
-                                          market_filter=market_filter,
-                                          ROI_filter=ROI_filter,
-                                          list_of_grp_by_fields=aggregation_fields,
-                                          )
-
-    # Extracting the execution times in a dataframe so that we can plot
-    execution_time_df = execution_times_df(dataframes_dict)
-
     with st.container(border=True):
         with st.expander('Pandas dataframe', expanded=False):
             st.dataframe(dataframes_dict['dataframe_1000_csv_pandas']['dataframe'], hide_index=True)
