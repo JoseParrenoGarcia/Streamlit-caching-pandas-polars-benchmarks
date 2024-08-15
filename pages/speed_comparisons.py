@@ -73,9 +73,9 @@ with st.sidebar:
                                     max_value=datetime(2024, 12, 31),
                                     format="YYYY-MM-DD")
 
-        device_filter = st.multiselect('Device:', options=['Desktop', 'Mobile'], placeholder='----')
+        device_filter = st.multiselect('Device:', options=['Desktop', 'Mobile'], placeholder='----', default=['Desktop', 'Mobile'])
 
-        market_filter = st.multiselect('Market:', options=markets, placeholder='----')
+        market_filter = st.multiselect('Market:', options=markets, placeholder='----', default=markets)
 
         ROI_filter = st.slider("ROI", 0.75, 1.55, (0.75, 1.55))
 
