@@ -57,15 +57,13 @@ def _calculate_minor_dtick(max_value):
 
 
 def _format_df(df):
-    df['nrows_string'] = df['Number of rows'].astype(int).apply(_format_number_of_rows)
+    return_df = df.copy()
+    return_df['nrows_string'] = return_df['Number of rows'].astype(int).apply(_format_number_of_rows)
 
     # Create a categorical column based on the custom order
-    df['Data format ordered'] = pd.Categorical(df['Data format'], categories=custom_order, ordered=True)
+    return_df['Data format ordered'] = pd.Categorical(return_df['Data format'], categories=custom_order, ordered=True)
 
-    # # Sort the dataframe based on the new categorical column
-    # df = df.sort_values('Data format ordered')
-
-    return df
+    return return_df
 
 
 def plot_execution_time_bar_charts(df, chart_title=''):
