@@ -39,6 +39,12 @@ if 'market_filter' not in st.session_state:
 if 'ROI_filter' not in st.session_state:
     st.session_state.ROI_filter = False
 
+if 'execution_time_df' not in st.session_state:
+    st.session_state.execution_time_df = False
+
+if 'dataframes_dict' not in st.session_state:
+    st.session_state.dataframes_dict = False
+
 
 # ---------------------------------------------------------------------
 # CACHE FUNCTION TO PERSIST FIRST RUN EXECUTION TIMES
@@ -97,52 +103,51 @@ with st.sidebar:
         st.session_state.device_filter = device_filter
         st.session_state.market_filter = market_filter
         st.session_state.ROI_filter = ROI_filter
+        st.session_state.execution_time_df = execution_time_df
+        st.session_state.dataframes_dict = dataframes_dict
 
-    st.write(st.session_state.aggregation_fields)
-    st.write(st.session_state.date_filter)
-    st.write(st.session_state.device_filter)
-    st.write(st.session_state.market_filter)
-    st.write(st.session_state.ROI_filter)
+    if st.session_state.execution_time_df is not False:
+        comparison_baseline_radio = st.radio(label='Compare execution times against:',
+                                             options=np.sort(st.session_state.execution_time_df['Data format'].unique()))
 
 # ---------------------------------------------------------------------
 # HOME PAGE - MAIN CONTENT AREA
 # ---------------------------------------------------------------------
-if submitted:
+if st.session_state.dataframes_dict is not False:
     with st.container(border=True):
-        with st.expander('Pandas dataframe', expanded=False):
-            st.dataframe(dataframes_dict['dataframe_1000_csv_pandas']['dataframe'], hide_index=True)
-
-        with st.expander('Pandas streamlit cached dataframe', expanded=False):
-            st.dataframe(dataframes_dict['dataframe_1000_csv_pandas_streamlit_cached']['dataframe'], hide_index=True)
-
-        with st.expander('Polars dataframe', expanded=False):
-            st.dataframe(dataframes_dict['dataframe_1000_csv_polars']['dataframe'], hide_index=True)
-
-        with st.expander('Pandas functools cached dataframe', expanded=False):
-            st.dataframe(dataframes_dict['dataframe_1000_csv_pandas_functools_cached']['dataframe'], hide_index=True)
-
-        with st.expander('Polars functools cached dataframe', expanded=False):
-            st.dataframe(dataframes_dict['dataframe_1000_csv_polars_functools_cached']['dataframe'], hide_index=True)
-
-    with st.container(border=True):
-        st.plotly_chart(plot_execution_time_bar_charts(df=execution_time_df,
+        st.plotly_chart(plot_execution_time_bar_charts(df=st.session_state.execution_time_df,
                                                        chart_title=' ',
                                                        )
                         )
 
     with st.container(border=True):
-        comparison_baseline_radio = st.radio(label='Compare execution times against:',
-                                             options=np.sort(execution_time_df['Data format'].unique()),
-                                             horizontal=True)
-
-        diffs_cached = calculate_percent_diff_execution_times(execution_time_df=execution_time_df,
+        diffs_cached = calculate_percent_diff_execution_times(execution_time_df=st.session_state.execution_time_df,
                                                               selected_baseline=comparison_baseline_radio
                                                               )
+        # st.write(comparison_baseline_radio)
+        # st.write(diffs_cached)
 
         st.plotly_chart(plot_execution_time_comparison_bar_charts(df=diffs_cached,
                                                                   selected_baseline=comparison_baseline_radio,
                                                                   chart_title=f'How much faster is reading vs using {comparison_baseline_radio}?',
                                                                   )
                         )
+
+    with st.container(border=True):
+        with st.expander('Pandas dataframe', expanded=False):
+            st.dataframe(st.session_state.dataframes_dict['dataframe_1000_csv_pandas']['dataframe'], hide_index=True)
+
+        with st.expander('Pandas streamlit cached dataframe', expanded=False):
+            st.dataframe(st.session_state.dataframes_dict['dataframe_1000_csv_pandas_streamlit_cached']['dataframe'], hide_index=True)
+
+        with st.expander('Polars dataframe', expanded=False):
+            st.dataframe(st.session_state.dataframes_dict['dataframe_1000_csv_polars']['dataframe'], hide_index=True)
+
+        with st.expander('Pandas functools cached dataframe', expanded=False):
+            st.dataframe(st.session_state.dataframes_dict['dataframe_1000_csv_pandas_functools_cached']['dataframe'], hide_index=True)
+
+        with st.expander('Polars functools cached dataframe', expanded=False):
+            st.dataframe(st.session_state.dataframes_dict['dataframe_1000_csv_polars_functools_cached']['dataframe'], hide_index=True)
+
 
 
