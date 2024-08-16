@@ -89,7 +89,7 @@ def plot_execution_time_bar_charts(df, chart_title=''):
     _xaxis_primary_basic_formatting(fig=fig, feature='Number of rows')
     _yaxis_primary_basic_formatting(fig=fig, feature='Execution time (s)', manual_minor_dtick=_calculate_minor_dtick(df['Execution Time'].max()))
 
-    fig.update_layout(title=dict(text=chart_title), template='plotly_white', height=420)
+    fig.update_layout(title=dict(text=chart_title), template='plotly_white', height=500, width=1000)
 
     # # Convert to a graph objects figure
     # fig = go.Figure(fig)
@@ -126,6 +126,6 @@ def plot_execution_time_comparison_bar_charts(df, selected_baseline, chart_title
     _xaxis_primary_basic_formatting(fig=fig, feature='Number of rows')
     _yaxis_primary_basic_formatting(fig=fig, feature=f'Ratio of {selected_baseline} / other formats', manual_minor_dtick=_calculate_minor_dtick(df['Ratio'].max()))
 
-    fig.update_layout(title=dict(text=chart_title), template='plotly_white', height=420)
+    fig.update_layout(title=dict(text=chart_title), template='plotly_white', height=500, width=1000)
 
     return fig
