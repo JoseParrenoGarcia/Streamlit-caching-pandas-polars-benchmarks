@@ -54,7 +54,7 @@ def filtering_pandas_cached(df: pd.DataFrame, dates_filter, device_filter, ROI_f
         df = df[(df['ROI'] >= ROI_filter[0]) & (df['ROI'] <= ROI_filter[1])]
 
     execution_time = time.time() - start_time
-    print('Polars cached filter: {}'.format(execution_time))
+    print('Pandas cached filter: {}'.format(execution_time))
 
     return df
 
